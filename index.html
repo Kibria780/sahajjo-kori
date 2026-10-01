@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>সাহায্য করি — সবার জন্য উন্মুক্ত AI মেন্টর</title>
+<meta name="description" content="সাহায্য করি — যেকোনো নৈতিক প্রশ্নের উত্তর দেবে AI মেন্টর, Hasan-এর পক্ষ থেকে। সম্পূর্ণ ফ্রি, সবার জন্য উন্মুক্ত।">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f7faf7; --card:#ffffff; --ink:#1d2b22; --muted:#5c6f62;
+    --green:#0d7a4f; --green-d:#0a6140; --amber:#f5a623; --amber-d:#d98a0b;
+    --line:#e3ece5; --soft:#eef6ef; --red:#c0392b;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  body{margin:0; font-family:'Hind Siliguri',sans-serif; background:var(--bg); color:var(--ink); line-height:1.7;}
+  .wrap{max-width:720px; margin:0 auto; padding:0 16px 60px;}
+  header.hero{background:linear-gradient(135deg,#0d7a4f,#0a5c3e); color:#fff; padding:34px 16px 30px; text-align:center; border-radius:0 0 26px 26px; box-shadow:0 4px 18px rgba(13,122,79,.25);}
+  header.hero h1{margin:0; font-size:2rem;}
+  header.hero p{margin:8px 0 0; opacity:.92; font-size:1.02rem;}
+  .badge{display:inline-block; background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.35); padding:3px 14px; border-radius:999px; font-size:.85rem; margin-bottom:10px;}
+  .steps{display:flex; gap:8px; margin:18px 0 4px;}
+  .step{flex:1; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:10px 6px; text-align:center; font-size:.82rem; color:var(--muted);}
+  .step b{display:block; font-size:1.25rem;}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:18px; padding:18px; margin-top:16px; box-shadow:0 2px 10px rgba(20,40,25,.05);}
+  .card h2{margin:0 0 10px; font-size:1.15rem; color:var(--green-d);}
+  label.lbl{display:block; font-weight:600; margin:10px 0 6px; font-size:.95rem;}
+  textarea{width:100%; min-height:96px; border:2px solid var(--line); border-radius:14px; padding:12px 14px; font-family:inherit; font-size:1rem; resize:vertical; background:#fff;}
+  textarea:focus{outline:none; border-color:var(--green);}
+  .row{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;}
+  select{flex:1; min-width:150px; border:2px solid var(--line); border-radius:12px; padding:10px 12px; font-family:inherit; font-size:.95rem; background:#fff;}
+  .btn{border:none; border-radius:12px; padding:12px 22px; font-family:inherit; font-size:1rem; font-weight:700; cursor:pointer; transition:transform .08s;}
+  .btn:active{transform:scale(.97);}
+  .btn-go{background:var(--green); color:#fff; flex:1;}
+  .btn-go:hover{background:var(--green-d);}
+  .btn-go:disabled{opacity:.6; cursor:wait;}
+  .btn-amber{background:var(--amber); color:#3a2a00;}
+  .btn-ghost{background:var(--soft); color:var(--green-d); border:1px solid var(--line); padding:9px 16px; font-size:.9rem;}
+  .chips{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;}
+  .chip{background:var(--soft); border:1px solid var(--line); color:var(--green-d); border-radius:999px; padding:7px 14px; font-size:.88rem; cursor:pointer; font-family:inherit;}
+  .chip:hover{background:#e0efe3;}
+  #answerBox{display:none;}
+  #answerBox.show{display:block; animation:fadeUp .35s ease;}
+  @keyframes fadeUp{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:none;}}
+  .q-line{background:var(--soft); border-radius:12px; padding:10px 14px; font-weight:600; margin-bottom:10px;}
+  .a-line{white-space:pre-wrap;}
+  .a-line ul{margin:8px 0; padding-left:20px;}
+  .spinner{display:inline-block; width:18px; height:18px; border:3px solid rgba(255,255,255,.4); border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite; vertical-align:-3px; margin-right:8px;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .loading{color:var(--muted); font-style:italic;}
+  .qa-item{border-bottom:1px solid var(--line); padding:12px 0;}
+  .qa-item:last-child{border-bottom:none;}
+  .qa-item .qq{font-weight:700; color:var(--green-d); cursor:pointer;}
+  .qa-item .aa{display:none; margin-top:8px; white-space:pre-wrap; color:#33473b; font-size:.95rem;}
+  .qa-item.open .aa{display:block;}
+  .toast{position:fixed; left:50%; bottom:26px; transform:translateX(-50%) translateY(20px); background:#1d2b22; color:#fff; padding:10px 20px; border-radius:999px; opacity:0; transition:.3s; z-index:99; font-size:.92rem; pointer-events:none;}
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+  details.settings{margin-top:14px; font-size:.9rem; color:var(--muted);}
+  details.settings summary{cursor:pointer; color:var(--green-d); font-weight:600;}
+  details.settings input{width:100%; margin-top:8px; border:2px solid var(--line); border-radius:10px; padding:9px 12px; font-family:inherit;}
+  .note{background:#fff8e8; border:1px solid #f3dd9a; border-radius:12px; padding:10px 14px; font-size:.88rem; color:#7a5b00; margin-top:14px;}
+  footer{text-align:center; color:var(--muted); font-size:.85rem; margin-top:26px;}
+  .prov{font-size:.8rem; color:var(--muted); margin-top:6px;}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap" style="padding-bottom:0;">
+    <div class="badge">🤝 সম্পূর্ণ ফ্রি • সবার জন্য উন্মুক্ত</div>
+    <h1>সাহায্য করি</h1>
+    <p>যেকোনো নৈতিক প্রশ্ন করো — AI মেন্টর উত্তর দেবে<br><b>Hasan-এর পক্ষ থেকে</b> 💚</p>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="steps">
+    <div class="step"><b>❓</b>প্রশ্ন লেখো</div>
+    <div class="step"><b>🤖</b>AI মেন্টর উত্তর দেবে</div>
+    <div class="step"><b>📤</b>শেয়ার করো</div>
+  </div>
+
+  <div class="card">
+    <h2>✍️ তোমার প্রশ্ন</h2>
+    <textarea id="qInput" placeholder="যেমন: অনলাইনে আয় শুরু করতে চাই, প্রথমে কী করবো?"></textarea>
+    <div class="row">
+      <select id="catInput">
+        <option value="">📂 বিষয় বেছে নাও (ঐচ্ছিক)</option>
+        <option>📚 পড়াশোনা</option>
+        <option>💼 ব্যবসা ও আয়</option>
+        <option>💻 প্রযুক্তি</option>
+        <option>🏥 স্বাস্থ্য</option>
+        <option>🌍 সাধারণ জ্ঞান</option>
+        <option>✨ অন্যান্য</option>
+      </select>
+      <button class="btn btn-go" id="askBtn" onclick="askMentor()">উত্তর দাও 🚀</button>
+    </div>
+    <div class="chips" id="sampleChips"></div>
+    <div class="note">🛡️ <b>নিয়ম:</b> অনৈতিক, ক্ষতিকর বা বেআইনি কোনো বিষয়ে সাহায্য করা হয় না।</div>
+  </div>
+
+  <div class="card" id="answerBox">
+    <h2>💡 মেন্টরের উত্তর</h2>
+    <div class="q-line" id="ansQ"></div>
+    <div class="a-line" id="ansA"></div>
+    <div class="prov" id="ansProv"></div>
+    <div class="row" style="margin-top:14px;">
+      <button class="btn btn-ghost" onclick="copyAnswer()">📋 উত্তর কপি</button>
+      <button class="btn btn-amber" onclick="copyFB()">📘 Facebook পোস্ট হিসেবে কপি</button>
+      <button class="btn btn-ghost" onclick="speakAnswer()">🔊 শোনো</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🔥 জনপ্রিয় প্রশ্নোত্তর</h2>
+    <div id="popularList"></div>
+  </div>
+
+  <div class="card">
+    <h2>🕘 তোমার সাম্প্রতিক প্রশ্ন</h2>
+    <div id="historyList"><p class="loading">এখনো কোনো প্রশ্ন করোনি।</p></div>
+  </div>
+
+  <details class="settings card">
+    <summary>⚙️ সেটিংস (ঐচ্ছিক — ফ্রি Groq API কী)</summary>
+    <p>ডিফল্ট ফ্রি AI দিয়েই চলবে। আরও দ্রুত ও নির্ভরযোগ্য উত্তর চাইলে <a href="https://console.groq.com" target="_blank" rel="noopener">console.groq.com</a> থেকে ফ্রি কী নিয়ে এখানে বসাও (শুধু তোমার ব্রাউজারে থাকবে)।</p>
+    <input type="password" id="groqKeyInput" placeholder="gsk_... কী এখানে বসাও">
+    <div class="row"><button class="btn btn-go" style="flex:none;" onclick="saveGroqKey()">সেভ করো</button>
+    <button class="btn btn-ghost" onclick="clearGroqKey()">মুছে ফেলো</button></div>
+  </details>
+
+  <footer>
+    🤝 <b>সাহায্য করি</b> — Hasan-এর উদ্যোগে সবার জন্য<br>
+    <span style="font-size:.78rem;">AI মেন্টরের উত্তর সাধারণ গাইডলাইন; গুরুত্বপূর্ণ সিদ্ধান্তে বিশেষজ্ঞের পরামর্শ নাও।</span>
+  </footer>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+/* ================= সাহায্য করি — AI Mentor ================= */
+var SYSTEM_PROMPT = "You are 'সাহায্য করি', a friendly AI mentor answering on behalf of Hasan, a Bangladeshi entrepreneur who started this free initiative to help everyone. "
+  + "Always answer in Bengali (Bangla script). Be warm, practical and clear. "
+  + "Structure: give the direct answer in 1-2 lines first, then key points as • bullets. Maximum ~250 words. "
+  + "If the question asks for anything illegal, harmful, dangerous or unethical (weapons, fraud, hacking, cheating in exams, hate, self-harm, medical diagnosis), politely decline in Bengali and offer to help with something else instead. "
+  + "Never claim to be human. If unsure, say so honestly in Bengali.";
+
+var GROQ_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
+var POLL_ENDPOINT = 'https://text.pollinations.ai/openai';
+var GROQ_MODELS = ['openai/gpt-oss-120b', 'openai/gpt-oss-20b'];
+
+var lastQ = '', lastA = '', lastProvider = '';
+
+function toast(msg){
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._tm); t._tm = setTimeout(function(){ t.classList.remove('show'); }, 3500);
+}
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function fmtText(s){
+  // bullets: lines starting with • or - become list items
+  var lines = String(s).split('\n'), html = '', inList = false;
+  lines.forEach(function(ln){
+    var t = ln.trim();
+    if (/^[•\-*]\s+/.test(t)){
+      if(!inList){ html += '<ul>'; inList = true; }
+      html += '<li>' + esc(t.replace(/^[•\-*]\s+/,'')) + '</li>';
+    } else {
+      if(inList){ html += '</ul>'; inList = false; }
+      if(t) html += '<p style="margin:6px 0;">' + esc(t) + '</p>';
+    }
+  });
+  if(inList) html += '</ul>';
+  return html || esc(s);
+}
+
+/* ---------- Groq key (shared with ieltsgo if present) ---------- */
+function getGroqKey(){
+  try{
+    return (localStorage.getItem('sahajjokori_groq_key') || localStorage.getItem('ieltsgo_groq_key') || '').trim();
+  }catch(e){ return ''; }
+}
+function saveGroqKey(){
+  var k = document.getElementById('groqKeyInput').value.trim();
+  if(!k){ toast('আগে কী-টা বসাও'); return; }
+  try{ localStorage.setItem('sahajjokori_groq_key', k); }catch(e){}
+  document.getElementById('groqKeyInput').value = '';
+  toast('✅ কী সেভ হয়েছে (শুধু তোমার ব্রাউজারে)');
+}
+function clearGroqKey(){
+  try{ localStorage.removeItem('sahajjokori_groq_key'); }catch(e){}
+  toast('কী মুছে ফেলা হয়েছে');
+}
+
+/* ---------- AI providers ---------- */
+async function requestGroq(question){
+  var key = getGroqKey(), lastErr = null;
+  for(var mi=0; mi<GROQ_MODELS.length; mi++){
+    var ctl = new AbortController();
+    var to = setTimeout(function(){ ctl.abort(); }, 25000);
+    try{
+      var r = await fetch(GROQ_ENDPOINT, {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer '+key },
+        body: JSON.stringify({
+          model: GROQ_MODELS[mi],
+          messages:[ {role:'system', content:SYSTEM_PROMPT}, {role:'user', content:question} ],
+          temperature:0.5, max_tokens:1200, reasoning_format:'hidden', reasoning_effort:'low'
+        }),
+        signal: ctl.signal
+      });
+      var txt = ''; try{ txt = await r.text(); }catch(e){}
+      if(!r.ok){ lastErr = new Error('Groq '+r.status); if((r.status===400||r.status===404)&&mi<GROQ_MODELS.length-1) continue; throw lastErr; }
+      var p = JSON.parse(txt);
+      var c = p && p.choices && p.choices[0] && p.choices[0].message ? p.choices[0].message.content : '';
+      if(!c) throw new Error('empty');
+      return c;
+    }catch(e){ lastErr = e; }
+    finally{ clearTimeout(to); }
+  }
+  throw lastErr;
+}
+async function requestPollinations(question){
+  var lastErr = null;
+  for(var a=1; a<=2; a++){
+    var ctl = new AbortController();
+    var to = setTimeout(function(){ ctl.abort(); }, 30000);
+    try{
+      var r = await fetch(POLL_ENDPOINT, {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json' },
+        body: JSON.stringify({
+          model:'openai',
+          messages:[ {role:'system', content:SYSTEM_PROMPT}, {role:'user', content:question} ],
+          temperature:0.5, private:true
+        }),
+        signal: ctl.signal
+      });
+      if(!r.ok) throw new Error('AI service '+r.status);
+      var p = await r.json();
+      var c = p && p.choices && p.choices[0] && p.choices[0].message ? p.choices[0].message.content : '';
+      if(!c) throw new Error('empty');
+      return c;
+    }catch(e){ lastErr = e; if(a===1) await new Promise(function(r){setTimeout(r,1500);}); }
+    finally{ clearTimeout(to); }
+  }
+  throw lastErr;
+}
+
+/* ---------- Ask flow ---------- */
+async function askMentor(){
+  var q = document.getElementById('qInput').value.trim();
+  var cat = document.getElementById('catInput').value;
+  if(!q){ toast('আগে তোমার প্রশ্নটা লেখো ✍️'); return; }
+  var btn = document.getElementById('askBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>উত্তর তৈরি হচ্ছে...';
+  var box = document.getElementById('answerBox');
+  box.classList.add('show');
+  document.getElementById('ansQ').textContent = '❓ ' + q;
+  document.getElementById('ansA').innerHTML = '<span class="loading">মেন্টর ভাবছে... 🤔</span>';
+  document.getElementById('ansProv').textContent = '';
+  var fullQ = cat ? ('['+cat.replace(/^[^\s]+\s/,'')+' বিষয়ে] ' + q) : q;
+  var answer = '', prov = '';
+  try{
+    if(getGroqKey()){ answer = await requestGroq(fullQ); prov = '⚡ Groq AI'; }
+    else { answer = await requestPollinations(fullQ); prov = '🌐 ফ্রি AI'; }
+  }catch(e1){
+    try{ answer = await requestPollinations(fullQ); prov = '🌐 ফ্রি AI'; }
+    catch(e2){
+      answer = '😔 দুঃখিত! এই মুহূর্তে AI সার্ভারে পৌঁছানো যাচ্ছে না।\n\n• একটু পরে আবার চেষ্টা করো\n• অথবা ⚙️ সেটিংস থেকে ফ্রি Groq কী বসাও — তাহলে আরও নির্ভরযোগ্যভাবে চলবে';
+      prov = '⚠️ অফলাইন';
+    }
+  }
+  lastQ = q; lastA = answer; lastProvider = prov;
+  document.getElementById('ansA').innerHTML = fmtText(answer);
+  document.getElementById('ansProv').textContent = prov + ' • সাহায্য করি AI মেন্টর';
+  btn.disabled = false; btn.textContent = 'উত্তর দাও 🚀';
+  saveHistory(q, answer);
+  box.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+/* ---------- Share / copy / speak ---------- */
+function fbFormat(q, a){
+  return '❓ প্রশ্ন: ' + q + '\n\n💡 উত্তর (সাহায্য করি AI মেন্টর):\n' + a
+    + '\n\n🤝 তোমারও কোনো প্রশ্ন আছে? সাহায্য করি — সবার জন্য উন্মুক্ত!\n#সাহাযযকরি #SahajjoKori';
+}
+function doCopy(text, msg){
+  function done(){ toast(msg); }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(function(){ fallback(); });
+  } else fallback();
+  function fallback(){
+    var ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); done(); }catch(e){ toast('কপি হয়নি, আবার চেষ্টা করো'); }
+    document.body.removeChild(ta);
+  }
+}
+function copyAnswer(){ if(!lastA){ toast('আগে প্রশ্ন করো'); return; } doCopy(lastA, '✅ উত্তর কপি হয়েছে'); }
+function copyFB(){ if(!lastQ){ toast('আগে প্রশ্ন করো'); return; } doCopy(fbFormat(lastQ, lastA), '📘 Facebook পোস্ট ফরম্যাট কপি হয়েছে!'); }
+function speakAnswer(){
+  if(!lastA){ toast('আগে প্রশ্ন করো'); return; }
+  try{
+    speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(lastA);
+    u.lang = 'bn-BD'; u.rate = 0.95;
+    var vs = speechSynthesis.getVoices();
+    var bn = vs.filter(function(v){ return /bn/i.test(v.lang); });
+    if(bn.length) u.voice = bn[0];
+    speechSynthesis.speak(u);
+  }catch(e){ toast('এই ব্রাউজারে ভয়েস সাপোর্ট নেই'); }
+}
+
+/* ---------- Samples & history ---------- */
+var SAMPLES = [
+  {q:'অনলাইনে আয় শুরু করতে চাই, প্রথমে কী করবো?', chips:true},
+  {q:'পরীক্ষার পড়া মনে থাকে না, কী করবো?'},
+  {q:'ছোট পুঁজিতে কোন ব্যবসা ভালো হবে?'},
+  {q:'মোবাইল দিয়ে ফ্রিল্যান্সিং শেখা যায়?'},
+  {q:'ইংরেজিতে কথা বলার ভয় কাটাবো কীভাবে?'}
+];
+var POPULAR = [
+  {q:'অনলাইনে আয় শুরু করতে চাই, প্রথমে কী করবো?',
+   a:'সরাসরি উত্তর: আগে একটা স্কিল শেখো, তারপর আয় — উল্টোটা নয়।\n\n• ধাপ ১: একটা চাহিদাসম্পন্ন স্কিল বেছে নাও (যেমন: ওয়েব ডিজাইন, ভিডিও এডিটিং, গ্রাফিক ডিজাইন, কনটেন্ট রাইটিং)\n• ধাপ ২: ২-৩ মাস প্রতিদিন ২ ঘণ্টা করে শেখো — YouTube-এ ফ্রি টিউটোরিয়াল আছে\n• ধাপ ৩: ৫-৬টা নমুনা কাজ বানিয়ে পোর্টফোলিও তৈরি করো\n• ধাপ ৪: Fiverr/Upwork-এ প্রোফাইল খুলে ছোট কাজ দিয়ে শুরু করো\n• সতর্কতা: "আগে টাকা দাও, পরে আয়" — এমন অফার ১০০% প্রতারণা'},
+  {q:'পরীক্ষার পড়া মনে থাকে না, কী করবো?',
+   a:'সরাসরি উত্তর: বারবার পড়ার চেয়ে "স্মরণ করে লেখা" ৩ গুণ কার্যকর।\n\n• পড়ার পর বই বন্ধ করে খাতায় মূল পয়েন্টগুলো লেখো — এটাই Active Recall\n• ১ দিন, ৭ দিন, ৩০ দিন পর রিভিশন দাও (Spaced Repetition)\n• কঠিন টপিক নিজের ভাষায় কাউকে বুঝিয়ে বলো (বা আয়নায় বলো)\n• পড়ার সময় ফোন দূরে রাখো — ২৫ মিনিট পড়া + ৫ মিনিট বিরতি\n• ঘুম ঠিক রাখো — ঘুমের মধ্যে মস্তিষ্ক পড়া "সেভ" করে'},
+  {q:'মোবাইল দিয়ে ফ্রিল্যান্সিং শেখা যায়?',
+   a:'সরাসরি উত্তর: হ্যাঁ, শুরুটা মোবাইল দিয়েই সম্ভব — তবে কিছু কাজে পরে ল্যাপটপ লাগবে।\n\n• মোবাইলে শেখা যায়: কনটেন্ট রাইটিং, সোশ্যাল মিডিয়া ম্যানেজমেন্ট, ভিডিও এডিটিং (CapCut), গ্রাফিক ডিজাইন (Canva)\n• প্রতিদিন ১-২ ঘণ্টা YouTube টিউটোরিয়াল + প্র্যাকটিস\n• ফ্রি টুল: Canva, CapCut, Google Docs — সব মোবাইলে চলে\n• কাজ পেলে প্রথম আয় দিয়ে একটা সেকেন্ড-হ্যান্ড ল্যাপটপ নাও — তাহলে সব ধরনের কাজ করতে পারবে'}
+];
+function renderSamples(){
+  var c = document.getElementById('sampleChips');
+  c.innerHTML = '';
+  SAMPLES.forEach(function(s){
+    var b = document.createElement('button');
+    b.className = 'chip'; b.textContent = '💬 ' + s.q;
+    b.onclick = function(){ document.getElementById('qInput').value = s.q; document.getElementById('qInput').focus(); };
+    c.appendChild(b);
+  });
+  var p = document.getElementById('popularList');
+  p.innerHTML = '';
+  POPULAR.forEach(function(item, i){
+    var d = document.createElement('div');
+    d.className = 'qa-item';
+    d.innerHTML = '<div class="qq">❓ ' + esc(item.q) + '</div><div class="aa">' + fmtText(item.a)
+      + '<div class="row"><button class="btn btn-ghost" onclick="copyPopular('+i+')">📘 Facebook-এ শেয়ার করো</button></div></div>';
+    d.querySelector('.qq').onclick = function(){ d.classList.toggle('open'); };
+    p.appendChild(d);
+  });
+}
+function copyPopular(i){ doCopy(fbFormat(POPULAR[i].q, POPULAR[i].a), '📘 Facebook পোস্ট ফরম্যাট কপি হয়েছে!'); }
+function getHistory(){
+  try{ return JSON.parse(localStorage.getItem('sahajjokori_history') || '[]'); }catch(e){ return []; }
+}
+function saveHistory(q, a){
+  try{
+    var h = getHistory();
+    h.unshift({q:q, a:a, t:Date.now()});
+    h = h.slice(0, 20);
+    localStorage.setItem('sahajjokori_history', JSON.stringify(h));
+    renderHistory();
+  }catch(e){}
+}
+function renderHistory(){
+  var h = getHistory(), el = document.getElementById('historyList');
+  if(!h.length){ el.innerHTML = '<p class="loading">এখনো কোনো প্রশ্ন করোনি।</p>'; return; }
+  el.innerHTML = '';
+  h.forEach(function(item){
+    var d = document.createElement('div');
+    d.className = 'qa-item';
+    d.innerHTML = '<div class="qq">❓ ' + esc(item.q) + '</div><div class="aa">' + fmtText(item.a) + '</div>';
+    d.querySelector('.qq').onclick = function(){ d.classList.toggle('open'); };
+    el.appendChild(d);
+  });
+}
+document.getElementById('qInput').addEventListener('keydown', function(e){
+  if(e.key === 'Enter' && (e.ctrlKey || e.metaKey)) askMentor();
+});
+renderSamples();
+renderHistory();
+</script>
+</body>
+</html>
