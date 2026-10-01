@@ -110,6 +110,24 @@
     font-size:.85rem; background:#fff; color:var(--muted);}
   .hint{font-size:.76rem; color:var(--muted);}
 
+  /* ---------- v3 additions ---------- */
+  .mrow.revealing .mactions{display:none;}
+  .mrow.revealing .prov{display:none;}
+  .top-right{margin-left:auto; display:flex; align-items:center; gap:8px;}
+  .topbtn{background:var(--soft); border:1px solid var(--line); border-radius:10px; padding:7px 11px;
+    cursor:pointer; font-size:1.05rem; font-family:inherit; line-height:1;}
+  .topbtn:hover{background:#e0efe3;}
+  .aidot{width:11px; height:11px; border-radius:50%; background:#b9c9bd; display:inline-block; flex:none;}
+  .aidot.ok{background:#22c55e; box-shadow:0 0 6px rgba(34,197,94,.7);}
+  .aidot.bad{background:#ef4444; box-shadow:0 0 6px rgba(239,68,68,.7);}
+  .micbtn{flex:none; width:44px; height:44px; border-radius:12px; border:1px solid var(--line); background:var(--soft);
+    color:var(--green-d); font-size:1.2rem; cursor:pointer; font-family:inherit;}
+  .micbtn:hover{background:#e0efe3;}
+  .micbtn.listening{background:#ef4444; border-color:#ef4444; color:#fff; animation:pulse 1s infinite;}
+  @keyframes pulse{50%{opacity:.55;}}
+  .sendbtn.stop{background:#ef4444;}
+  .sendbtn.stop:hover{background:#dc2626;}
+
   /* ---------- Modal ---------- */
   .modal{display:none; position:fixed; inset:0; background:rgba(15,30,20,.55); z-index:100;
     align-items:center; justify-content:center; padding:18px;}
@@ -172,6 +190,10 @@
         <div class="tt" id="chatTitle">সাহায্য করি</div>
         <div class="sub">AI মেন্টর • বাংলায় উত্তর দেয় 💚</div>
       </div>
+      <div class="top-right">
+        <span id="aiDot" class="aidot" title="AI স্ট্যাটাস"></span>
+        <button class="topbtn" onclick="exportChat()" title="চ্যাট ডাউনলোড (.txt)">📥</button>
+      </div>
     </div>
 
     <div class="msgs" id="msgs"><div class="msgs-inner" id="msgsInner"></div></div>
@@ -180,6 +202,7 @@
       <div class="composer-inner">
         <div class="cbox">
           <textarea id="qInput" rows="1" placeholder="তোমার প্রশ্ন লেখো... (Enter = পাঠাও)"></textarea>
+          <button class="micbtn" id="micBtn" onclick="toggleVoice()" title="ভয়েসে বলো 🎤">🎤</button>
           <button class="sendbtn" id="sendBtn" onclick="sendMessage()" title="পাঠাও">➤</button>
         </div>
         <div class="crow">
@@ -211,7 +234,7 @@
 
 <div class="toast" id="toast"></div>
 <script>
-/* ================= সাহায্য করি v2 — Chat UI ================= */
+/* ================= সাহায্য করি v3 — Chat UI ================= */
 var SYSTEM_PROMPT = "You are 'সাহায্য করি', a friendly AI mentor answering on behalf of Hasan, a Bangladeshi entrepreneur who started this free initiative to help everyone. "
   + "Always answer in Bengali (Bangla script). Be warm, practical and clear. "
   + "Structure: give the direct answer in 1-2 lines first, then key points as • bullets. Maximum ~250 words. "
@@ -224,6 +247,7 @@ var GROQ_MODELS = ['openai/gpt-oss-120b', 'openai/gpt-oss-20b'];
 var LS_KEY = 'sahajjokori_chats_v2';
 
 var chats = {}, activeId = null, sending = false;
+var currentAbort = null, typingStopped = false, revealTimer = null;
 
 /* ---------- helpers ---------- */
 function toast(msg){
@@ -355,6 +379,7 @@ function renderMessages(){
 function msgNode(m, idx){
   var row = document.createElement('div');
   row.className = 'mrow ' + m.role;
+  row.setAttribute('data-midx', idx);
   var av = document.createElement('div');
   av.className = 'avatar'; av.textContent = m.role === 'user' ? '🧑' : '🤖';
   var bub = document.createElement('div');
@@ -363,10 +388,14 @@ function msgNode(m, idx){
     bub.innerHTML = '<p style="margin:0;">' + esc(m.text) + '</p>';
     row.appendChild(bub); row.appendChild(av);
   } else {
-    bub.innerHTML = fmtText(m.text);
+    var txt = document.createElement('div');
+    txt.className = 'atext';
+    txt.innerHTML = fmtText(m.text);
+    bub.appendChild(txt);
     if(m.prov){ var pv = document.createElement('div'); pv.className = 'prov'; pv.textContent = m.prov; bub.appendChild(pv); }
     var ac = document.createElement('div'); ac.className = 'mactions';
     [['📋 কপি', function(){ doCopy(m.text, '✅ উত্তর কপি হয়েছে'); }],
+     ['🔄 আবার', function(){ regenerateAnswer(idx); }],
      ['📘 FB শেয়ার', function(){ shareToFB(idx); }],
      ['🔊 শোনো', function(){ speakText(m.text); }]].forEach(function(pair){
       var b = document.createElement('button');
@@ -406,71 +435,161 @@ function saveGroqKey(){
   document.getElementById('groqKeyInput').value = '';
   toast('✅ কী সেভ হয়েছে');
 }
-async function requestGroq(question){
-  var key = getGroqKey(), lastErr = null;
-  for(var mi=0; mi<GROQ_MODELS.length; mi++){
-    var ctl = new AbortController();
-    var to = setTimeout(function(){ ctl.abort(); }, 25000);
-    try{
-      var r = await fetch(GROQ_ENDPOINT, {
-        method:'POST',
-        headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer '+key },
-        body: JSON.stringify({
-          model: GROQ_MODELS[mi],
-          messages:[ {role:'system', content:SYSTEM_PROMPT}, {role:'user', content:question} ],
-          temperature:0.5, max_tokens:1200, reasoning_format:'hidden', reasoning_effort:'low'
-        }),
-        signal: ctl.signal
-      });
-      var txt = ''; try{ txt = await r.text(); }catch(e){}
-      if(!r.ok){ lastErr = new Error('Groq '+r.status); if((r.status===400||r.status===404)&&mi<GROQ_MODELS.length-1) continue; throw lastErr; }
-      var p = JSON.parse(txt);
-      var c = p && p.choices && p.choices[0] && p.choices[0].message ? p.choices[0].message.content : '';
-      if(!c) throw new Error('empty');
-      return c;
-    }catch(e){ lastErr = e; }
-    finally{ clearTimeout(to); }
-  }
-  throw lastErr;
+/* ---------- AI chain (v3: abort-aware, nonstop) ---------- */
+var OFFLINE_MSG = '😔 দুঃখিত! এই মুহূর্তে AI সার্ভারে পৌঁছানো যাচ্ছে না।\n\n• একটু পরে আবার চেষ্টা করো\n• অথবা সাইডবারের ⚙️ থেকে ফ্রি Groq কী বসাও — তাহলে আরও নির্ভরযোগ্যভাবে চলবে';
+
+function linkSignal(localCtl, extSignal){
+  if(!extSignal) return function(){};
+  if(extSignal.aborted){ try{ localCtl.abort(); }catch(e){} return function(){}; }
+  var onA = function(){ try{ localCtl.abort(); }catch(e){} };
+  extSignal.addEventListener('abort', onA, {once:true});
+  return function(){ try{ extSignal.removeEventListener('abort', onA); }catch(e){} };
 }
-async function requestPollinations(question){
-  var lastErr = null;
-  for(var a=1; a<=2; a++){
-    var ctl = new AbortController();
-    var to = setTimeout(function(){ ctl.abort(); }, 30000);
-    try{
-      var r = await fetch(POLL_ENDPOINT, {
-        method:'POST',
-        headers:{ 'Content-Type':'application/json' },
-        body: JSON.stringify({
-          model:'openai',
-          messages:[ {role:'system', content:SYSTEM_PROMPT}, {role:'user', content:question} ],
-          temperature:0.5, private:true
-        }),
-        signal: ctl.signal
-      });
-      if(!r.ok) throw new Error('AI service '+r.status);
-      var p = await r.json();
-      var c = p && p.choices && p.choices[0] && p.choices[0].message ? p.choices[0].message.content : '';
-      if(!c) throw new Error('empty');
-      return c;
-    }catch(e){ lastErr = e; if(a===1) await new Promise(function(r){setTimeout(r,1500);}); }
-    finally{ clearTimeout(to); }
+function isUserAbort(e, sig){ return !!(e && e.name === 'AbortError' && sig && sig.aborted); }
+function sleepAbort(ms, sig){
+  return new Promise(function(res, rej){
+    var done = false;
+    var to = setTimeout(function(){ cleanup(); res(); }, ms);
+    function onA(){ if(done) return; done = true; cleanup(); rej(new DOMException('aborted','AbortError')); }
+    function cleanup(){ clearTimeout(to); if(sig){ try{ sig.removeEventListener('abort', onA); }catch(e){} } }
+    if(sig){
+      if(sig.aborted){ onA(); return; }
+      sig.addEventListener('abort', onA, {once:true});
+    }
+  });
+}
+async function requestGroqModel(question, model, key, extSignal){
+  var ctl = new AbortController();
+  var unlink = linkSignal(ctl, extSignal);
+  var to = setTimeout(function(){ ctl.abort(); }, 25000);
+  try{
+    var r = await fetch(GROQ_ENDPOINT, {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer '+key },
+      body: JSON.stringify({
+        model: model,
+        messages:[ {role:'system', content:SYSTEM_PROMPT}, {role:'user', content:question} ],
+        temperature:0.5, max_tokens:1200, reasoning_format:'hidden', reasoning_effort:'low'
+      }),
+      signal: ctl.signal
+    });
+    var txt = ''; try{ txt = await r.text(); }catch(e){}
+    if(!r.ok) throw new Error('Groq '+r.status);
+    var p = JSON.parse(txt);
+    var c = p && p.choices && p.choices[0] && p.choices[0].message ? p.choices[0].message.content : '';
+    if(!c) throw new Error('empty');
+    return c;
+  } finally { clearTimeout(to); unlink(); }
+}
+async function requestPollinationsModel(question, model, extSignal){
+  var ctl = new AbortController();
+  var unlink = linkSignal(ctl, extSignal);
+  var to = setTimeout(function(){ ctl.abort(); }, 30000);
+  try{
+    var r = await fetch(POLL_ENDPOINT, {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({
+        model: model,
+        messages:[ {role:'system', content:SYSTEM_PROMPT}, {role:'user', content:question} ],
+        temperature:0.5, private:true
+      }),
+      signal: ctl.signal
+    });
+    if(!r.ok) throw new Error('AI service '+r.status);
+    var p = await r.json();
+    var c = p && p.choices && p.choices[0] && p.choices[0].message ? p.choices[0].message.content : '';
+    if(!c) throw new Error('empty');
+    return c;
+  } finally { clearTimeout(to); unlink(); }
+}
+/* Nonstop chain: Groq model 1 → Groq model 2 → Pollinations openai → Pollinations mistral → offline notice */
+async function fetchAnswer(question, extSignal){
+  var key = getGroqKey();
+  if(key){
+    for(var mi=0; mi<GROQ_MODELS.length; mi++){
+      try{
+        var t = await requestGroqModel(question, GROQ_MODELS[mi], key, extSignal);
+        return { text:t, prov:'⚡ Groq AI • সাহায্য করি মেন্টর', ok:true };
+      }catch(e){ if(isUserAbort(e, extSignal)) throw e; }
+    }
   }
-  throw lastErr;
+  for(var a=1; a<=2; a++){
+    try{
+      var t2 = await requestPollinationsModel(question, 'openai', extSignal);
+      return { text:t2, prov:'🌐 ফ্রি AI • সাহায্য করি মেন্টর', ok:true };
+    }catch(e){
+      if(isUserAbort(e, extSignal)) throw e;
+      if(a===1){ try{ await sleepAbort(1500, extSignal); }catch(se){ throw se; } }
+    }
+  }
+  try{
+    var t3 = await requestPollinationsModel(question, 'mistral', extSignal);
+    return { text:t3, prov:'🌐 ফ্রি AI • সাহায্য করি মেন্টর', ok:true };
+  }catch(e){ if(isUserAbort(e, extSignal)) throw e; }
+  return { text:OFFLINE_MSG, prov:'⚠️ অফলাইন', ok:false };
+}
+function setAIStatus(ok){
+  var d = document.getElementById('aiDot');
+  if(!d) return;
+  d.classList.remove('ok','bad');
+  if(ok === true){ d.classList.add('ok'); d.title = 'AI সচল আছে ✅ — শেষ উত্তর সফল'; }
+  else if(ok === false){ d.classList.add('bad'); d.title = 'শেষ উত্তরে সমস্যা হয়েছিল ❌ — আবার চেষ্টা করো'; }
 }
 
-/* ---------- send ---------- */
+/* ---------- send / stop / reveal / regenerate (v3) ---------- */
+function setSendBtn(mode){
+  var b = document.getElementById('sendBtn');
+  if(!b) return;
+  if(mode === 'stop'){ b.innerHTML = '⏹'; b.title = 'থামাও'; b.disabled = false; b.classList.add('stop'); }
+  else { b.innerHTML = '➤'; b.title = 'পাঠাও'; b.disabled = false; b.classList.remove('stop'); }
+}
+function finishSending(){
+  sending = false; currentAbort = null; typingStopped = false;
+  setSendBtn('send');
+}
+function stopGenerating(){
+  typingStopped = true;
+  if(currentAbort){ try{ currentAbort.abort(); }catch(e){} }
+}
+function revealInto(chatId, msgIdx, fullText, prov){
+  var c = chats[chatId];
+  if(!c || !c.messages[msgIdx]){ finishSending(); return; }
+  var msg = c.messages[msgIdx];
+  msg.prov = prov;
+  typingStopped = false;
+  var i = 0;
+  clearInterval(revealTimer);
+  revealTimer = setInterval(function(){
+    if(typingStopped){ finishReveal(true); return; }
+    i += 24;
+    if(activeId === chatId){
+      var target = document.querySelector('#msgsInner .mrow.ai[data-midx="'+msgIdx+'"] .atext');
+      if(target){ target.innerHTML = fmtText(fullText.slice(0, i)); scrollBottom(); }
+    }
+    if(i >= fullText.length){ finishReveal(false); }
+  }, 18);
+  function finishReveal(stopped){
+    clearInterval(revealTimer); revealTimer = null;
+    msg.text = stopped ? fullText.slice(0, i) : fullText;
+    c.updatedAt = Date.now(); saveChats();
+    finishSending();
+    renderConvList();
+    if(activeId === chatId) renderMessages();
+  }
+}
 async function sendMessage(){
-  if(sending) return;
+  if(sending){ stopGenerating(); return; }
   var inp = document.getElementById('qInput');
   var q = inp.value.trim();
   var cat = document.getElementById('catInput').value;
   if(!q){ toast('আগে তোমার প্রশ্নটা লেখো ✍️'); return; }
   ensureChat();
   var c = chats[activeId];
+  var chatId = activeId;
   sending = true;
-  document.getElementById('sendBtn').disabled = true;
+  currentAbort = new AbortController(); typingStopped = false;
+  setSendBtn('stop');
   c.messages.push({role:'user', text:q});
   if(c.messages.length === 1) c.title = q.length > 42 ? q.slice(0,42) + '…' : q;
   c.updatedAt = Date.now();
@@ -478,23 +597,79 @@ async function sendMessage(){
   saveChats(); renderConvList(); renderMessages(); showTyping();
 
   var fullQ = cat ? ('[' + cat.replace(/^[^\s]+\s/,'') + ' বিষয়ে] ' + q) : q;
-  var answer = '', prov = '';
+  var sig = currentAbort.signal;
   try{
-    if(getGroqKey()){ answer = await requestGroq(fullQ); prov = '⚡ Groq AI • সাহায্য করি মেন্টর'; }
-    else { answer = await requestPollinations(fullQ); prov = '🌐 ফ্রি AI • সাহায্য করি মেন্টর'; }
-  }catch(e1){
-    try{ answer = await requestPollinations(fullQ); prov = '🌐 ফ্রি AI • সাহায্য করি মেন্টর'; }
-    catch(e2){
-      answer = '😔 দুঃখিত! এই মুহূর্তে AI সার্ভারে পৌঁছানো যাচ্ছে না।\n\n• একটু পরে আবার চেষ্টা করো\n• অথবা সাইডবারের ⚙️ থেকে ফ্রি Groq কী বসাও — তাহলে আরও নির্ভরযোগ্যভাবে চলবে';
-      prov = '⚠️ অফলাইন';
+    var res = await fetchAnswer(fullQ, sig);
+    hideTyping();
+    setAIStatus(res.ok);
+    if(!chats[chatId]){ finishSending(); return; }
+    chats[chatId].messages.push({role:'ai', text:'', prov:'', q:q});
+    var msgIdx = chats[chatId].messages.length - 1;
+    chats[chatId].updatedAt = Date.now(); saveChats();
+    renderConvList();
+    if(activeId === chatId){
+      renderMessages();
+      var rowEl = document.querySelector('#msgsInner .mrow.ai[data-midx="'+msgIdx+'"]');
+      if(rowEl) rowEl.classList.add('revealing');
     }
+    revealInto(chatId, msgIdx, res.text, res.prov);
+  }catch(e){
+    hideTyping();
+    if(chats[chatId]){
+      if(isUserAbort(e, sig)){
+        chats[chatId].messages.push({role:'ai', text:'⏹️ উত্তর থামিয়ে দেওয়া হয়েছে।', prov:'⏹️ থামানো', q:q});
+        toast('⏹️ থামানো হয়েছে');
+      } else {
+        chats[chatId].messages.push({role:'ai', text:OFFLINE_MSG, prov:'⚠️ অফলাইন', q:q});
+        setAIStatus(false);
+      }
+      chats[chatId].updatedAt = Date.now(); saveChats();
+      renderConvList();
+      if(activeId === chatId) renderMessages();
+    }
+    finishSending();
   }
-  hideTyping();
-  c.messages.push({role:'ai', text:answer, prov:prov, q:q});
-  c.updatedAt = Date.now();
-  saveChats(); renderConvList(); renderMessages();
-  sending = false;
-  document.getElementById('sendBtn').disabled = false;
+}
+async function regenerateAnswer(idx){
+  if(sending){ toast('আগে চলমান উত্তর শেষ হতে দাও ⏳'); return; }
+  ensureChat();
+  var c = chats[activeId];
+  var chatId = activeId;
+  var m = c.messages[idx];
+  if(!m || m.role !== 'ai') return;
+  var q = m.q || (idx > 0 && c.messages[idx-1] && c.messages[idx-1].role === 'user' ? c.messages[idx-1].text : '');
+  if(!q){ toast('প্রশ্ন পাওয়া যায়নি'); return; }
+  sending = true;
+  currentAbort = new AbortController(); typingStopped = false;
+  setSendBtn('stop');
+  m.text = ''; m.prov = '';
+  saveChats(); renderMessages();
+  var rowEl = document.querySelector('#msgsInner .mrow.ai[data-midx="'+idx+'"]');
+  if(rowEl){
+    rowEl.classList.add('revealing');
+    var at = rowEl.querySelector('.atext');
+    if(at) at.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
+    scrollBottom();
+  }
+  var sig = currentAbort.signal;
+  try{
+    var res = await fetchAnswer(q, sig);
+    setAIStatus(res.ok);
+    if(!chats[chatId]){ finishSending(); return; }
+    revealInto(chatId, idx, res.text, res.prov);
+  }catch(e){
+    if(chats[chatId]){
+      var mm = chats[chatId].messages[idx];
+      if(mm){
+        if(isUserAbort(e, sig)){ mm.text = '⏹️ উত্তর থামিয়ে দেওয়া হয়েছে।'; mm.prov = '⏹️ থামানো'; toast('⏹️ থামানো হয়েছে'); }
+        else { mm.text = OFFLINE_MSG; mm.prov = '⚠️ অফলাইন'; setAIStatus(false); }
+      }
+      chats[chatId].updatedAt = Date.now(); saveChats();
+      renderConvList();
+      if(activeId === chatId) renderMessages();
+    }
+    finishSending();
+  }
 }
 
 /* ---------- share / copy / speak ---------- */
@@ -529,6 +704,57 @@ function speakText(text){
     if(bn.length) u.voice = bn[0];
     speechSynthesis.speak(u);
   }catch(e){ toast('এই ব্রাউজারে ভয়েস সাপোর্ট নেই'); }
+}
+
+/* ---------- voice input (v3) ---------- */
+var recog = null, listening = false;
+function toggleVoice(){
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){ toast('এই ব্রাউজারে ভয়েস সাপোর্ট নেই'); return; }
+  if(listening){ try{ recog.stop(); }catch(e){} return; }
+  var ta = document.getElementById('qInput');
+  var base = ta.value;
+  recog = new SR();
+  recog.lang = 'bn-BD';
+  recog.interimResults = true;
+  recog.continuous = false;
+  recog.onresult = function(ev){
+    var fin = '', interim = '';
+    for(var i=ev.resultIndex; i<ev.results.length; i++){
+      if(ev.results[i].isFinal) fin += ev.results[i][0].transcript;
+      else interim += ev.results[i][0].transcript;
+    }
+    ta.value = (base ? base + ' ' : '') + (fin + interim).trim();
+    autoGrow();
+  };
+  recog.onend = function(){ listening = false; var b = document.getElementById('micBtn'); if(b) b.classList.remove('listening'); };
+  recog.onerror = function(){ listening = false; var b = document.getElementById('micBtn'); if(b) b.classList.remove('listening'); };
+  try{
+    recog.start();
+    listening = true;
+    document.getElementById('micBtn').classList.add('listening');
+    toast('🎤 বলো...');
+  }catch(e){ toast('ভয়েস চালু হয়নি'); }
+}
+
+/* ---------- export chat (v3) ---------- */
+function exportChat(){
+  ensureChat();
+  var c = chats[activeId];
+  if(!c || !c.messages.length){ toast('ডাউনলোড করার মতো আলাপ নেই'); return; }
+  var lines = ['🤝 সাহায্য করি — ' + c.title, ''];
+  c.messages.forEach(function(m){
+    if(m.role === 'user'){ lines.push('❓ প্রশ্ন:', m.text, ''); }
+    else { lines.push('💡 উত্তর:', m.text, ''); }
+  });
+  var blob = new Blob(["\ufeff" + lines.join('\n')], {type:'text/plain;charset=utf-8'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'sahajjo-kori-chat.txt';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function(){ try{ URL.revokeObjectURL(a.href); }catch(e){} a.remove(); }, 800);
+  toast('📥 ডাউনলোড হচ্ছে');
 }
 
 /* ---------- popular modal ---------- */
@@ -569,7 +795,7 @@ function autoGrow(){
 }
 document.getElementById('qInput').addEventListener('input', autoGrow);
 document.getElementById('qInput').addEventListener('keydown', function(e){
-  if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendMessage(); }
+  if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); if(!sending) sendMessage(); }
 });
 document.addEventListener('keydown', function(e){
   if(e.key === 'Escape'){ closeModal(); toggleSidebar(false); }
