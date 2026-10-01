@@ -2,141 +2,216 @@
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>সাহায্য করি — সবার জন্য উন্মুক্ত AI মেন্টর</title>
 <meta name="description" content="সাহায্য করি — যেকোনো নৈতিক প্রশ্নের উত্তর দেবে AI মেন্টর, Hasan-এর পক্ষ থেকে। সম্পূর্ণ ফ্রি, সবার জন্য উন্মুক্ত।">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#f7faf7; --card:#ffffff; --ink:#1d2b22; --muted:#5c6f62;
-    --green:#0d7a4f; --green-d:#0a6140; --amber:#f5a623; --amber-d:#d98a0b;
-    --line:#e3ece5; --soft:#eef6ef; --red:#c0392b;
+    --bg:#f4f7f4; --card:#ffffff; --ink:#1d2b22; --muted:#64766a;
+    --green:#0d7a4f; --green-d:#0a5c3e; --green-dd:#083d2b;
+    --amber:#f5a623; --line:#e2ebe4; --soft:#edf5ee;
+    --user-b:#0d7a4f; --shadow:0 2px 12px rgba(15,45,28,.08);
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
-  body{margin:0; font-family:'Hind Siliguri',sans-serif; background:var(--bg); color:var(--ink); line-height:1.7;}
-  .wrap{max-width:720px; margin:0 auto; padding:0 16px 60px;}
-  header.hero{background:linear-gradient(135deg,#0d7a4f,#0a5c3e); color:#fff; padding:34px 16px 30px; text-align:center; border-radius:0 0 26px 26px; box-shadow:0 4px 18px rgba(13,122,79,.25);}
-  header.hero h1{margin:0; font-size:2rem;}
-  header.hero p{margin:8px 0 0; opacity:.92; font-size:1.02rem;}
-  .badge{display:inline-block; background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.35); padding:3px 14px; border-radius:999px; font-size:.85rem; margin-bottom:10px;}
-  .steps{display:flex; gap:8px; margin:18px 0 4px;}
-  .step{flex:1; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:10px 6px; text-align:center; font-size:.82rem; color:var(--muted);}
-  .step b{display:block; font-size:1.25rem;}
-  .card{background:var(--card); border:1px solid var(--line); border-radius:18px; padding:18px; margin-top:16px; box-shadow:0 2px 10px rgba(20,40,25,.05);}
-  .card h2{margin:0 0 10px; font-size:1.15rem; color:var(--green-d);}
-  label.lbl{display:block; font-weight:600; margin:10px 0 6px; font-size:.95rem;}
-  textarea{width:100%; min-height:96px; border:2px solid var(--line); border-radius:14px; padding:12px 14px; font-family:inherit; font-size:1rem; resize:vertical; background:#fff;}
-  textarea:focus{outline:none; border-color:var(--green);}
-  .row{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;}
-  select{flex:1; min-width:150px; border:2px solid var(--line); border-radius:12px; padding:10px 12px; font-family:inherit; font-size:.95rem; background:#fff;}
-  .btn{border:none; border-radius:12px; padding:12px 22px; font-family:inherit; font-size:1rem; font-weight:700; cursor:pointer; transition:transform .08s;}
-  .btn:active{transform:scale(.97);}
-  .btn-go{background:var(--green); color:#fff; flex:1;}
-  .btn-go:hover{background:var(--green-d);}
-  .btn-go:disabled{opacity:.6; cursor:wait;}
-  .btn-amber{background:var(--amber); color:#3a2a00;}
-  .btn-ghost{background:var(--soft); color:var(--green-d); border:1px solid var(--line); padding:9px 16px; font-size:.9rem;}
-  .chips{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;}
-  .chip{background:var(--soft); border:1px solid var(--line); color:var(--green-d); border-radius:999px; padding:7px 14px; font-size:.88rem; cursor:pointer; font-family:inherit;}
-  .chip:hover{background:#e0efe3;}
-  #answerBox{display:none;}
-  #answerBox.show{display:block; animation:fadeUp .35s ease;}
-  @keyframes fadeUp{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:none;}}
-  .q-line{background:var(--soft); border-radius:12px; padding:10px 14px; font-weight:600; margin-bottom:10px;}
-  .a-line{white-space:pre-wrap;}
-  .a-line ul{margin:8px 0; padding-left:20px;}
-  .spinner{display:inline-block; width:18px; height:18px; border:3px solid rgba(255,255,255,.4); border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite; vertical-align:-3px; margin-right:8px;}
-  @keyframes spin{to{transform:rotate(360deg);}}
-  .loading{color:var(--muted); font-style:italic;}
+  html,body{height:100%;}
+  body{margin:0; font-family:'Hind Siliguri',sans-serif; background:var(--bg); color:var(--ink); line-height:1.65;}
+  .app{display:flex; height:100dvh; overflow:hidden;}
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{width:290px; flex:none; background:linear-gradient(180deg,var(--green-d),var(--green-dd)); color:#fff;
+    display:flex; flex-direction:column; z-index:40;}
+  .brand{padding:18px 16px 12px; border-bottom:1px solid rgba(255,255,255,.12);}
+  .brand h1{margin:0; font-size:1.35rem; display:flex; align-items:center; gap:8px;}
+  .brand p{margin:4px 0 0; font-size:.8rem; opacity:.75;}
+  .newchat{margin:14px 16px 6px; background:var(--amber); color:#3a2a00; border:none; border-radius:12px;
+    padding:11px; font-family:inherit; font-weight:700; font-size:.95rem; cursor:pointer;}
+  .newchat:hover{filter:brightness(1.05);}
+  .side-sec{padding:8px 16px 4px; font-size:.75rem; letter-spacing:.06em; opacity:.6; text-transform:uppercase;}
+  .convs{flex:1; overflow-y:auto; padding:0 10px 10px;}
+  .conv{display:flex; align-items:center; gap:8px; padding:10px 12px; border-radius:10px; cursor:pointer;
+    font-size:.9rem; margin-bottom:4px; border:1px solid transparent;}
+  .conv:hover{background:rgba(255,255,255,.08);}
+  .conv.active{background:rgba(255,255,255,.14); border-color:rgba(255,255,255,.2);}
+  .conv .t{flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .conv .x{background:none; border:none; color:rgba(255,255,255,.55); cursor:pointer; font-size:1rem; padding:0 2px;}
+  .conv .x:hover{color:#ffb3a7;}
+  .empty-hist{padding:10px 16px; font-size:.85rem; opacity:.6;}
+  .side-foot{border-top:1px solid rgba(255,255,255,.12); padding:10px 12px; display:flex; flex-direction:column; gap:6px;}
+  .side-btn{background:rgba(255,255,255,.08); color:#fff; border:1px solid rgba(255,255,255,.14); border-radius:10px;
+    padding:9px 12px; font-family:inherit; font-size:.88rem; cursor:pointer; text-align:left;}
+  .side-btn:hover{background:rgba(255,255,255,.14);}
+  details.keyset{font-size:.82rem; opacity:.95;}
+  details.keyset summary{cursor:pointer; padding:9px 12px; background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.14); border-radius:10px; font-size:.88rem;}
+  details.keyset .kin{padding:10px 4px 2px;}
+  details.keyset input{width:100%; border:none; border-radius:8px; padding:8px 10px; font-family:inherit; font-size:.85rem; margin-bottom:8px;}
+  details.keyset button{background:var(--amber); border:none; border-radius:8px; padding:7px 14px;
+    font-family:inherit; font-weight:700; cursor:pointer; font-size:.85rem; color:#3a2a00;}
+
+  /* ---------- Main ---------- */
+  .main{flex:1; display:flex; flex-direction:column; min-width:0;}
+  .topbar{display:flex; align-items:center; gap:10px; padding:12px 16px; background:var(--card);
+    border-bottom:1px solid var(--line); box-shadow:var(--shadow); z-index:20;}
+  .burger{display:none; background:none; border:none; font-size:1.4rem; cursor:pointer; color:var(--green-d);}
+  .topbar .tt{font-weight:700; color:var(--green-d); font-size:1.05rem;}
+  .topbar .sub{font-size:.78rem; color:var(--muted);}
+  .scrim{display:none;}
+
+  .msgs{flex:1; overflow-y:auto; padding:22px 16px 12px;}
+  .msgs-inner{max-width:760px; margin:0 auto; display:flex; flex-direction:column; gap:14px;}
+
+  .hero-empty{text-align:center; padding:34px 10px 10px;}
+  .hero-empty .big{font-size:3rem;}
+  .hero-empty h2{margin:8px 0 4px; color:var(--green-d); font-size:1.4rem;}
+  .hero-empty p{color:var(--muted); margin:0 0 14px;}
+  .chips{display:flex; flex-wrap:wrap; gap:8px; justify-content:center;}
+  .chip{background:var(--card); border:1px solid var(--line); color:var(--green-d); border-radius:999px;
+    padding:8px 15px; font-size:.88rem; cursor:pointer; font-family:inherit; box-shadow:var(--shadow);}
+  .chip:hover{border-color:var(--green); background:var(--soft);}
+
+  .mrow{display:flex; gap:10px; align-items:flex-start; animation:fadeUp .25s ease;}
+  @keyframes fadeUp{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;}}
+  .mrow.user{justify-content:flex-end;}
+  .avatar{flex:none; width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-size:1.1rem; background:var(--soft); border:1px solid var(--line);}
+  .mrow.user .avatar{background:var(--green); color:#fff; border:none;}
+  .bubble{max-width:82%; padding:11px 15px; border-radius:16px; font-size:.97rem; word-wrap:break-word;}
+  .mrow.user .bubble{background:var(--user-b); color:#fff; border-bottom-right-radius:6px;}
+  .mrow.ai .bubble{background:var(--card); border:1px solid var(--line); border-bottom-left-radius:6px; box-shadow:var(--shadow);}
+  .bubble p{margin:6px 0;}
+  .bubble ul{margin:8px 0; padding-left:20px;}
+  .bubble li{margin:3px 0;}
+  .mactions{display:flex; gap:6px; margin-top:10px; flex-wrap:wrap;}
+  .mbtn{background:var(--soft); border:1px solid var(--line); color:var(--green-d); border-radius:999px;
+    padding:5px 12px; font-size:.8rem; cursor:pointer; font-family:inherit; font-weight:600;}
+  .mbtn:hover{background:#e0efe3;}
+  .prov{font-size:.72rem; color:var(--muted); margin-top:8px;}
+  .typing{display:inline-flex; gap:5px; padding:14px 16px;}
+  .typing span{width:8px; height:8px; border-radius:50%; background:#9db5a4; animation:tp 1.2s infinite;}
+  .typing span:nth-child(2){animation-delay:.15s;} .typing span:nth-child(3){animation-delay:.3s;}
+  @keyframes tp{0%,60%,100%{transform:none; opacity:.5;} 30%{transform:translateY(-5px); opacity:1;}}
+
+  .composer{padding:12px 16px calc(14px + env(safe-area-inset-bottom)); background:var(--card); border-top:1px solid var(--line);}
+  .composer-inner{max-width:760px; margin:0 auto;}
+  .cbox{display:flex; gap:8px; align-items:flex-end; background:var(--bg); border:2px solid var(--line);
+    border-radius:16px; padding:8px 8px 8px 14px; transition:border-color .15s;}
+  .cbox:focus-within{border-color:var(--green);}
+  textarea#qInput{flex:1; border:none; background:transparent; resize:none; font-family:inherit; font-size:1rem;
+    max-height:130px; padding:8px 0; line-height:1.55;}
+  textarea#qInput:focus{outline:none;}
+  .sendbtn{flex:none; width:44px; height:44px; border-radius:12px; border:none; background:var(--green); color:#fff;
+    font-size:1.25rem; cursor:pointer;}
+  .sendbtn:hover{background:var(--green-d);}
+  .sendbtn:disabled{opacity:.55; cursor:wait;}
+  .crow{display:flex; gap:8px; margin-top:8px; align-items:center;}
+  select#catInput{border:1px solid var(--line); border-radius:10px; padding:7px 10px; font-family:inherit;
+    font-size:.85rem; background:#fff; color:var(--muted);}
+  .hint{font-size:.76rem; color:var(--muted);}
+
+  /* ---------- Modal ---------- */
+  .modal{display:none; position:fixed; inset:0; background:rgba(15,30,20,.55); z-index:100;
+    align-items:center; justify-content:center; padding:18px;}
+  .modal.open{display:flex;}
+  .modal-card{background:#fff; border-radius:18px; max-width:620px; width:100%; max-height:82dvh; overflow-y:auto; padding:20px;}
+  .modal-card h2{margin:0 0 6px; color:var(--green-d); font-size:1.2rem;}
+  .mclose{float:right; background:var(--soft); border:none; border-radius:50%; width:34px; height:34px;
+    font-size:1.1rem; cursor:pointer; color:var(--green-d);}
   .qa-item{border-bottom:1px solid var(--line); padding:12px 0;}
   .qa-item:last-child{border-bottom:none;}
-  .qa-item .qq{font-weight:700; color:var(--green-d); cursor:pointer;}
-  .qa-item .aa{display:none; margin-top:8px; white-space:pre-wrap; color:#33473b; font-size:.95rem;}
+  .qa-item .qq{font-weight:700; color:var(--green-d); cursor:pointer; font-size:.95rem;}
+  .qa-item .aa{display:none; margin-top:8px; font-size:.92rem; color:#33473b;}
   .qa-item.open .aa{display:block;}
-  .toast{position:fixed; left:50%; bottom:26px; transform:translateX(-50%) translateY(20px); background:#1d2b22; color:#fff; padding:10px 20px; border-radius:999px; opacity:0; transition:.3s; z-index:99; font-size:.92rem; pointer-events:none;}
+
+  .toast{position:fixed; left:50%; bottom:90px; transform:translateX(-50%) translateY(20px); background:#1d2b22; color:#fff;
+    padding:10px 20px; border-radius:999px; opacity:0; transition:.3s; z-index:200; font-size:.92rem; pointer-events:none;}
   .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
-  details.settings{margin-top:14px; font-size:.9rem; color:var(--muted);}
-  details.settings summary{cursor:pointer; color:var(--green-d); font-weight:600;}
-  details.settings input{width:100%; margin-top:8px; border:2px solid var(--line); border-radius:10px; padding:9px 12px; font-family:inherit;}
-  .note{background:#fff8e8; border:1px solid #f3dd9a; border-radius:12px; padding:10px 14px; font-size:.88rem; color:#7a5b00; margin-top:14px;}
-  footer{text-align:center; color:var(--muted); font-size:.85rem; margin-top:26px;}
-  .prov{font-size:.8rem; color:var(--muted); margin-top:6px;}
+
+  @media (max-width:820px){
+    .sidebar{position:fixed; top:0; bottom:0; left:0; transform:translateX(-105%); transition:transform .25s ease;}
+    .sidebar.open{transform:none; box-shadow:8px 0 30px rgba(0,0,0,.25);}
+    .burger{display:block;}
+    .scrim{display:block; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:30;
+      opacity:0; pointer-events:none; transition:opacity .25s;}
+    .scrim.on{opacity:1; pointer-events:auto;}
+    .bubble{max-width:88%;}
+  }
 </style>
 </head>
 <body>
-<header class="hero">
-  <div class="wrap" style="padding-bottom:0;">
-    <div class="badge">🤝 সম্পূর্ণ ফ্রি • সবার জন্য উন্মুক্ত</div>
-    <h1>সাহায্য করি</h1>
-    <p>যেকোনো নৈতিক প্রশ্ন করো — AI মেন্টর উত্তর দেবে<br><b>Hasan-এর পক্ষ থেকে</b> 💚</p>
-  </div>
-</header>
-
-<div class="wrap">
-  <div class="steps">
-    <div class="step"><b>❓</b>প্রশ্ন লেখো</div>
-    <div class="step"><b>🤖</b>AI মেন্টর উত্তর দেবে</div>
-    <div class="step"><b>📤</b>শেয়ার করো</div>
-  </div>
-
-  <div class="card">
-    <h2>✍️ তোমার প্রশ্ন</h2>
-    <textarea id="qInput" placeholder="যেমন: অনলাইনে আয় শুরু করতে চাই, প্রথমে কী করবো?"></textarea>
-    <div class="row">
-      <select id="catInput">
-        <option value="">📂 বিষয় বেছে নাও (ঐচ্ছিক)</option>
-        <option>📚 পড়াশোনা</option>
-        <option>💼 ব্যবসা ও আয়</option>
-        <option>💻 প্রযুক্তি</option>
-        <option>🏥 স্বাস্থ্য</option>
-        <option>🌍 সাধারণ জ্ঞান</option>
-        <option>✨ অন্যান্য</option>
-      </select>
-      <button class="btn btn-go" id="askBtn" onclick="askMentor()">উত্তর দাও 🚀</button>
+<div class="app">
+  <!-- ===== Sidebar ===== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <h1>🤝 সাহায্য করি</h1>
+      <p>Hasan-এর পক্ষ থেকে • সবার জন্য ফ্রি</p>
     </div>
-    <div class="chips" id="sampleChips"></div>
-    <div class="note">🛡️ <b>নিয়ম:</b> অনৈতিক, ক্ষতিকর বা বেআইনি কোনো বিষয়ে সাহায্য করা হয় না।</div>
-  </div>
+    <button class="newchat" onclick="newChat()">➕ নতুন আলাপ</button>
+    <div class="side-sec">সাম্প্রতিক আলাপ</div>
+    <div class="convs" id="convList"></div>
+    <div class="side-foot">
+      <button class="side-btn" onclick="openModal()">🔥 জনপ্রিয় প্রশ্নোত্তর</button>
+      <details class="keyset">
+        <summary>⚙️ ফ্রি Groq কী (ঐচ্ছিক)</summary>
+        <div class="kin">
+          <input type="password" id="groqKeyInput" placeholder="gsk_...">
+          <button onclick="saveGroqKey()">সেভ</button>
+          <div style="margin-top:6px; opacity:.75;">কী শুধু তোমার ব্রাউজারে থাকে। <a href="https://console.groq.com" target="_blank" rel="noopener" style="color:#ffd97a;">ফ্রি কী নাও</a></div>
+        </div>
+      </details>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim" onclick="toggleSidebar(false)"></div>
 
-  <div class="card" id="answerBox">
-    <h2>💡 মেন্টরের উত্তর</h2>
-    <div class="q-line" id="ansQ"></div>
-    <div class="a-line" id="ansA"></div>
-    <div class="prov" id="ansProv"></div>
-    <div class="row" style="margin-top:14px;">
-      <button class="btn btn-ghost" onclick="copyAnswer()">📋 উত্তর কপি</button>
-      <button class="btn btn-amber" onclick="copyFB()">📘 Facebook পোস্ট হিসেবে কপি</button>
-      <button class="btn btn-ghost" onclick="speakAnswer()">🔊 শোনো</button>
+  <!-- ===== Main ===== -->
+  <div class="main">
+    <div class="topbar">
+      <button class="burger" onclick="toggleSidebar()">☰</button>
+      <div>
+        <div class="tt" id="chatTitle">সাহায্য করি</div>
+        <div class="sub">AI মেন্টর • বাংলায় উত্তর দেয় 💚</div>
+      </div>
+    </div>
+
+    <div class="msgs" id="msgs"><div class="msgs-inner" id="msgsInner"></div></div>
+
+    <div class="composer">
+      <div class="composer-inner">
+        <div class="cbox">
+          <textarea id="qInput" rows="1" placeholder="তোমার প্রশ্ন লেখো... (Enter = পাঠাও)"></textarea>
+          <button class="sendbtn" id="sendBtn" onclick="sendMessage()" title="পাঠাও">➤</button>
+        </div>
+        <div class="crow">
+          <select id="catInput">
+            <option value="">📂 বিষয় (ঐচ্ছিক)</option>
+            <option>📚 পড়াশোনা</option>
+            <option>💼 ব্যবসা ও আয়</option>
+            <option>💻 প্রযুক্তি</option>
+            <option>🏥 স্বাস্থ্য</option>
+            <option>🌍 সাধারণ জ্ঞান</option>
+            <option>✨ অন্যান্য</option>
+          </select>
+          <span class="hint">🛡️ অনৈতিক প্রশ্নের উত্তর দেওয়া হয় না</span>
+        </div>
+      </div>
     </div>
   </div>
+</div>
 
-  <div class="card">
+<!-- ===== Popular modal ===== -->
+<div class="modal" id="popModal" onclick="if(event.target===this)closeModal()">
+  <div class="modal-card">
+    <button class="mclose" onclick="closeModal()">✕</button>
     <h2>🔥 জনপ্রিয় প্রশ্নোত্তর</h2>
+    <p style="color:var(--muted); font-size:.88rem; margin:0 0 8px;">ট্যাপ করে উত্তর দেখো, ভালো লাগলে Facebook-এ শেয়ার করো</p>
     <div id="popularList"></div>
   </div>
-
-  <div class="card">
-    <h2>🕘 তোমার সাম্প্রতিক প্রশ্ন</h2>
-    <div id="historyList"><p class="loading">এখনো কোনো প্রশ্ন করোনি।</p></div>
-  </div>
-
-  <details class="settings card">
-    <summary>⚙️ সেটিংস (ঐচ্ছিক — ফ্রি Groq API কী)</summary>
-    <p>ডিফল্ট ফ্রি AI দিয়েই চলবে। আরও দ্রুত ও নির্ভরযোগ্য উত্তর চাইলে <a href="https://console.groq.com" target="_blank" rel="noopener">console.groq.com</a> থেকে ফ্রি কী নিয়ে এখানে বসাও (শুধু তোমার ব্রাউজারে থাকবে)।</p>
-    <input type="password" id="groqKeyInput" placeholder="gsk_... কী এখানে বসাও">
-    <div class="row"><button class="btn btn-go" style="flex:none;" onclick="saveGroqKey()">সেভ করো</button>
-    <button class="btn btn-ghost" onclick="clearGroqKey()">মুছে ফেলো</button></div>
-  </details>
-
-  <footer>
-    🤝 <b>সাহায্য করি</b> — Hasan-এর উদ্যোগে সবার জন্য<br>
-    <span style="font-size:.78rem;">AI মেন্টরের উত্তর সাধারণ গাইডলাইন; গুরুত্বপূর্ণ সিদ্ধান্তে বিশেষজ্ঞের পরামর্শ নাও।</span>
-  </footer>
 </div>
+
 <div class="toast" id="toast"></div>
 <script>
-/* ================= সাহায্য করি — AI Mentor ================= */
+/* ================= সাহায্য করি v2 — Chat UI ================= */
 var SYSTEM_PROMPT = "You are 'সাহায্য করি', a friendly AI mentor answering on behalf of Hasan, a Bangladeshi entrepreneur who started this free initiative to help everyone. "
   + "Always answer in Bengali (Bangla script). Be warm, practical and clear. "
   + "Structure: give the direct answer in 1-2 lines first, then key points as • bullets. Maximum ~250 words. "
@@ -146,17 +221,18 @@ var SYSTEM_PROMPT = "You are 'সাহায্য করি', a friendly AI me
 var GROQ_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
 var POLL_ENDPOINT = 'https://text.pollinations.ai/openai';
 var GROQ_MODELS = ['openai/gpt-oss-120b', 'openai/gpt-oss-20b'];
+var LS_KEY = 'sahajjokori_chats_v2';
 
-var lastQ = '', lastA = '', lastProvider = '';
+var chats = {}, activeId = null, sending = false;
 
+/* ---------- helpers ---------- */
 function toast(msg){
   var t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
-  clearTimeout(t._tm); t._tm = setTimeout(function(){ t.classList.remove('show'); }, 3500);
+  clearTimeout(t._tm); t._tm = setTimeout(function(){ t.classList.remove('show'); }, 3200);
 }
 function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function fmtText(s){
-  // bullets: lines starting with • or - become list items
   var lines = String(s).split('\n'), html = '', inList = false;
   lines.forEach(function(ln){
     var t = ln.trim();
@@ -165,32 +241,171 @@ function fmtText(s){
       html += '<li>' + esc(t.replace(/^[•\-*]\s+/,'')) + '</li>';
     } else {
       if(inList){ html += '</ul>'; inList = false; }
-      if(t) html += '<p style="margin:6px 0;">' + esc(t) + '</p>';
+      if(t) html += '<p>' + esc(t) + '</p>';
     }
   });
   if(inList) html += '</ul>';
-  return html || esc(s);
+  return html || '<p>' + esc(s) + '</p>';
+}
+function uid(){ return 'c' + Date.now().toString(36) + Math.floor(Math.random()*9999).toString(36); }
+
+/* ---------- storage ---------- */
+function loadChats(){
+  try{ chats = JSON.parse(localStorage.getItem(LS_KEY) || '{}'); }catch(e){ chats = {}; }
+  // v1 history migration (one-time)
+  try{
+    var old = JSON.parse(localStorage.getItem('sahajjokori_history') || '[]');
+    if(old.length && !localStorage.getItem('sahajjokori_migrated')){
+      var id = uid(), msgs = [];
+      old.slice().reverse().forEach(function(h){
+        msgs.push({role:'user', text:h.q});
+        msgs.push({role:'ai', text:h.a, prov:'⚠️ আগের সংস্করণ'});
+      });
+      chats[id] = { id:id, title:'আগের প্রশ্নগুলো', messages:msgs, updatedAt:Date.now() };
+      localStorage.setItem('sahajjokori_migrated','1');
+      localStorage.removeItem('sahajjokori_history');
+    }
+  }catch(e){}
+}
+function saveChats(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(chats)); }catch(e){} }
+
+/* ---------- sidebar ---------- */
+function toggleSidebar(force){
+  var sb = document.getElementById('sidebar'), sc = document.getElementById('scrim');
+  var open = (typeof force === 'boolean') ? force : !sb.classList.contains('open');
+  sb.classList.toggle('open', open); sc.classList.toggle('on', open);
+}
+function renderConvList(){
+  var el = document.getElementById('convList');
+  var arr = Object.keys(chats).map(function(k){ return chats[k]; })
+    .sort(function(a,b){ return b.updatedAt - a.updatedAt; });
+  if(!arr.length){ el.innerHTML = '<div class="empty-hist">এখনো কোনো আলাপ নেই।<br>নতুন আলাপ শুরু করো! 👇</div>'; return; }
+  el.innerHTML = '';
+  arr.forEach(function(c){
+    var d = document.createElement('div');
+    d.className = 'conv' + (c.id === activeId ? ' active' : '');
+    var t = document.createElement('div'); t.className = 't'; t.textContent = '💬 ' + c.title;
+    var x = document.createElement('button'); x.className = 'x'; x.textContent = '✕'; x.title = 'মুছে ফেলো';
+    x.onclick = function(e){ e.stopPropagation(); deleteChat(c.id); };
+    d.appendChild(t); d.appendChild(x);
+    d.onclick = function(){ selectChat(c.id); };
+    el.appendChild(d);
+  });
+}
+function newChat(){
+  var id = uid();
+  chats[id] = { id:id, title:'নতুন আলাপ', messages:[], updatedAt:Date.now() };
+  activeId = id; saveChats(); renderConvList(); renderMessages();
+  toggleSidebar(false);
+  document.getElementById('qInput').focus();
+}
+function selectChat(id){
+  activeId = id; renderConvList(); renderMessages(); toggleSidebar(false);
+}
+function deleteChat(id){
+  delete chats[id]; saveChats();
+  if(activeId === id){
+    var rest = Object.keys(chats);
+    activeId = rest.length ? rest[0] : null;
+    if(!activeId) newChatSilent();
+  }
+  renderConvList(); renderMessages();
+}
+function newChatSilent(){
+  var id = uid();
+  chats[id] = { id:id, title:'নতুন আলাপ', messages:[], updatedAt:Date.now() };
+  activeId = id;
+}
+function ensureChat(){
+  if(!activeId || !chats[activeId]) newChatSilent();
 }
 
-/* ---------- Groq key (shared with ieltsgo if present) ---------- */
+/* ---------- messages ---------- */
+var SAMPLE_CHIPS = [
+  'অনলাইনে আয় শুরু করতে চাই, প্রথমে কী করবো?',
+  'পরীক্ষার পড়া মনে থাকে না, কী করবো?',
+  'ছোট পুঁজিতে কোন ব্যবসা ভালো হবে?',
+  'মোবাইল দিয়ে ফ্রিল্যান্সিং শেখা যায়?',
+  'ইংরেজিতে কথা বলার ভয় কাটাবো কীভাবে?'
+];
+function renderMessages(){
+  ensureChat();
+  var c = chats[activeId];
+  var box = document.getElementById('msgsInner');
+  document.getElementById('chatTitle').textContent = c.title === 'নতুন আলাপ' ? 'সাহায্য করি' : c.title;
+  box.innerHTML = '';
+  if(!c.messages.length){
+    var h = document.createElement('div');
+    h.className = 'hero-empty';
+    h.innerHTML = '<div class="big">🤝</div><h2>কীভাবে সাহায্য করতে পারি?</h2>'
+      + '<p>যেকোনো নৈতিক প্রশ্ন করো — AI মেন্টর বাংলায় উত্তর দেবে</p><div class="chips" id="chipRow"></div>';
+    box.appendChild(h);
+    var row = h.querySelector('#chipRow');
+    SAMPLE_CHIPS.forEach(function(q){
+      var b = document.createElement('button');
+      b.className = 'chip'; b.textContent = '💬 ' + q;
+      b.onclick = function(){ document.getElementById('qInput').value = q; sendMessage(); };
+      row.appendChild(b);
+    });
+  } else {
+    c.messages.forEach(function(m, idx){ box.appendChild(msgNode(m, idx)); });
+  }
+  scrollBottom();
+}
+function msgNode(m, idx){
+  var row = document.createElement('div');
+  row.className = 'mrow ' + m.role;
+  var av = document.createElement('div');
+  av.className = 'avatar'; av.textContent = m.role === 'user' ? '🧑' : '🤖';
+  var bub = document.createElement('div');
+  bub.className = 'bubble';
+  if(m.role === 'user'){
+    bub.innerHTML = '<p style="margin:0;">' + esc(m.text) + '</p>';
+    row.appendChild(bub); row.appendChild(av);
+  } else {
+    bub.innerHTML = fmtText(m.text);
+    if(m.prov){ var pv = document.createElement('div'); pv.className = 'prov'; pv.textContent = m.prov; bub.appendChild(pv); }
+    var ac = document.createElement('div'); ac.className = 'mactions';
+    [['📋 কপি', function(){ doCopy(m.text, '✅ উত্তর কপি হয়েছে'); }],
+     ['📘 FB শেয়ার', function(){ shareToFB(idx); }],
+     ['🔊 শোনো', function(){ speakText(m.text); }]].forEach(function(pair){
+      var b = document.createElement('button');
+      b.className = 'mbtn'; b.textContent = pair[0]; b.onclick = pair[1];
+      ac.appendChild(b);
+    });
+    bub.appendChild(ac);
+    row.appendChild(av); row.appendChild(bub);
+  }
+  return row;
+}
+function scrollBottom(){
+  var m = document.getElementById('msgs');
+  m.scrollTop = m.scrollHeight;
+}
+function showTyping(){
+  var box = document.getElementById('msgsInner');
+  var row = document.createElement('div');
+  row.className = 'mrow ai'; row.id = 'typingRow';
+  row.innerHTML = '<div class="avatar">🤖</div><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>';
+  box.appendChild(row); scrollBottom();
+}
+function hideTyping(){
+  var t = document.getElementById('typingRow');
+  if(t) t.remove();
+}
+
+/* ---------- AI ---------- */
 function getGroqKey(){
-  try{
-    return (localStorage.getItem('sahajjokori_groq_key') || localStorage.getItem('ieltsgo_groq_key') || '').trim();
-  }catch(e){ return ''; }
+  try{ return (localStorage.getItem('sahajjokori_groq_key') || localStorage.getItem('ieltsgo_groq_key') || '').trim(); }
+  catch(e){ return ''; }
 }
 function saveGroqKey(){
   var k = document.getElementById('groqKeyInput').value.trim();
   if(!k){ toast('আগে কী-টা বসাও'); return; }
   try{ localStorage.setItem('sahajjokori_groq_key', k); }catch(e){}
   document.getElementById('groqKeyInput').value = '';
-  toast('✅ কী সেভ হয়েছে (শুধু তোমার ব্রাউজারে)');
+  toast('✅ কী সেভ হয়েছে');
 }
-function clearGroqKey(){
-  try{ localStorage.removeItem('sahajjokori_groq_key'); }catch(e){}
-  toast('কী মুছে ফেলা হয়েছে');
-}
-
-/* ---------- AI providers ---------- */
 async function requestGroq(question){
   var key = getGroqKey(), lastErr = null;
   for(var mi=0; mi<GROQ_MODELS.length; mi++){
@@ -245,78 +460,78 @@ async function requestPollinations(question){
   throw lastErr;
 }
 
-/* ---------- Ask flow ---------- */
-async function askMentor(){
-  var q = document.getElementById('qInput').value.trim();
+/* ---------- send ---------- */
+async function sendMessage(){
+  if(sending) return;
+  var inp = document.getElementById('qInput');
+  var q = inp.value.trim();
   var cat = document.getElementById('catInput').value;
   if(!q){ toast('আগে তোমার প্রশ্নটা লেখো ✍️'); return; }
-  var btn = document.getElementById('askBtn');
-  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>উত্তর তৈরি হচ্ছে...';
-  var box = document.getElementById('answerBox');
-  box.classList.add('show');
-  document.getElementById('ansQ').textContent = '❓ ' + q;
-  document.getElementById('ansA').innerHTML = '<span class="loading">মেন্টর ভাবছে... 🤔</span>';
-  document.getElementById('ansProv').textContent = '';
-  var fullQ = cat ? ('['+cat.replace(/^[^\s]+\s/,'')+' বিষয়ে] ' + q) : q;
+  ensureChat();
+  var c = chats[activeId];
+  sending = true;
+  document.getElementById('sendBtn').disabled = true;
+  c.messages.push({role:'user', text:q});
+  if(c.messages.length === 1) c.title = q.length > 42 ? q.slice(0,42) + '…' : q;
+  c.updatedAt = Date.now();
+  inp.value = ''; autoGrow();
+  saveChats(); renderConvList(); renderMessages(); showTyping();
+
+  var fullQ = cat ? ('[' + cat.replace(/^[^\s]+\s/,'') + ' বিষয়ে] ' + q) : q;
   var answer = '', prov = '';
   try{
-    if(getGroqKey()){ answer = await requestGroq(fullQ); prov = '⚡ Groq AI'; }
-    else { answer = await requestPollinations(fullQ); prov = '🌐 ফ্রি AI'; }
+    if(getGroqKey()){ answer = await requestGroq(fullQ); prov = '⚡ Groq AI • সাহায্য করি মেন্টর'; }
+    else { answer = await requestPollinations(fullQ); prov = '🌐 ফ্রি AI • সাহায্য করি মেন্টর'; }
   }catch(e1){
-    try{ answer = await requestPollinations(fullQ); prov = '🌐 ফ্রি AI'; }
+    try{ answer = await requestPollinations(fullQ); prov = '🌐 ফ্রি AI • সাহায্য করি মেন্টর'; }
     catch(e2){
-      answer = '😔 দুঃখিত! এই মুহূর্তে AI সার্ভারে পৌঁছানো যাচ্ছে না।\n\n• একটু পরে আবার চেষ্টা করো\n• অথবা ⚙️ সেটিংস থেকে ফ্রি Groq কী বসাও — তাহলে আরও নির্ভরযোগ্যভাবে চলবে';
+      answer = '😔 দুঃখিত! এই মুহূর্তে AI সার্ভারে পৌঁছানো যাচ্ছে না।\n\n• একটু পরে আবার চেষ্টা করো\n• অথবা সাইডবারের ⚙️ থেকে ফ্রি Groq কী বসাও — তাহলে আরও নির্ভরযোগ্যভাবে চলবে';
       prov = '⚠️ অফলাইন';
     }
   }
-  lastQ = q; lastA = answer; lastProvider = prov;
-  document.getElementById('ansA').innerHTML = fmtText(answer);
-  document.getElementById('ansProv').textContent = prov + ' • সাহায্য করি AI মেন্টর';
-  btn.disabled = false; btn.textContent = 'উত্তর দাও 🚀';
-  saveHistory(q, answer);
-  box.scrollIntoView({behavior:'smooth', block:'start'});
+  hideTyping();
+  c.messages.push({role:'ai', text:answer, prov:prov, q:q});
+  c.updatedAt = Date.now();
+  saveChats(); renderConvList(); renderMessages();
+  sending = false;
+  document.getElementById('sendBtn').disabled = false;
 }
 
-/* ---------- Share / copy / speak ---------- */
+/* ---------- share / copy / speak ---------- */
+function doCopy(text, msg){
+  function done(){ toast(msg); }
+  function fallback(){
+    var ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); done(); }catch(e){ toast('কপি হয়নি'); }
+    document.body.removeChild(ta);
+  }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(fallback);
+  } else fallback();
+}
 function fbFormat(q, a){
   return '❓ প্রশ্ন: ' + q + '\n\n💡 উত্তর (সাহায্য করি AI মেন্টর):\n' + a
     + '\n\n🤝 তোমারও কোনো প্রশ্ন আছে? সাহায্য করি — সবার জন্য উন্মুক্ত!\n#সাহাযযকরি #SahajjoKori';
 }
-function doCopy(text, msg){
-  function done(){ toast(msg); }
-  if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(text).then(done).catch(function(){ fallback(); });
-  } else fallback();
-  function fallback(){
-    var ta = document.createElement('textarea');
-    ta.value = text; document.body.appendChild(ta); ta.select();
-    try{ document.execCommand('copy'); done(); }catch(e){ toast('কপি হয়নি, আবার চেষ্টা করো'); }
-    document.body.removeChild(ta);
-  }
+function shareToFB(idx){
+  var c = chats[activeId];
+  var m = c.messages[idx];
+  var q = m.q || '(প্রশ্ন)';
+  doCopy(fbFormat(q, m.text), '📘 Facebook পোস্ট ফরম্যাট কপি হয়েছে!');
 }
-function copyAnswer(){ if(!lastA){ toast('আগে প্রশ্ন করো'); return; } doCopy(lastA, '✅ উত্তর কপি হয়েছে'); }
-function copyFB(){ if(!lastQ){ toast('আগে প্রশ্ন করো'); return; } doCopy(fbFormat(lastQ, lastA), '📘 Facebook পোস্ট ফরম্যাট কপি হয়েছে!'); }
-function speakAnswer(){
-  if(!lastA){ toast('আগে প্রশ্ন করো'); return; }
+function speakText(text){
   try{
     speechSynthesis.cancel();
-    var u = new SpeechSynthesisUtterance(lastA);
+    var u = new SpeechSynthesisUtterance(text);
     u.lang = 'bn-BD'; u.rate = 0.95;
-    var vs = speechSynthesis.getVoices();
-    var bn = vs.filter(function(v){ return /bn/i.test(v.lang); });
+    var bn = speechSynthesis.getVoices().filter(function(v){ return /bn/i.test(v.lang); });
     if(bn.length) u.voice = bn[0];
     speechSynthesis.speak(u);
   }catch(e){ toast('এই ব্রাউজারে ভয়েস সাপোর্ট নেই'); }
 }
 
-/* ---------- Samples & history ---------- */
-var SAMPLES = [
-  {q:'অনলাইনে আয় শুরু করতে চাই, প্রথমে কী করবো?', chips:true},
-  {q:'পরীক্ষার পড়া মনে থাকে না, কী করবো?'},
-  {q:'ছোট পুঁজিতে কোন ব্যবসা ভালো হবে?'},
-  {q:'মোবাইল দিয়ে ফ্রিল্যান্সিং শেখা যায়?'},
-  {q:'ইংরেজিতে কথা বলার ভয় কাটাবো কীভাবে?'}
-];
+/* ---------- popular modal ---------- */
 var POPULAR = [
   {q:'অনলাইনে আয় শুরু করতে চাই, প্রথমে কী করবো?',
    a:'সরাসরি উত্তর: আগে একটা স্কিল শেখো, তারপর আয় — উল্টোটা নয়।\n\n• ধাপ ১: একটা চাহিদাসম্পন্ন স্কিল বেছে নাও (যেমন: ওয়েব ডিজাইন, ভিডিও এডিটিং, গ্রাফিক ডিজাইন, কনটেন্ট রাইটিং)\n• ধাপ ২: ২-৩ মাস প্রতিদিন ২ ঘণ্টা করে শেখো — YouTube-এ ফ্রি টিউটোরিয়াল আছে\n• ধাপ ৩: ৫-৬টা নমুনা কাজ বানিয়ে পোর্টফোলিও তৈরি করো\n• ধাপ ৪: Fiverr/Upwork-এ প্রোফাইল খুলে ছোট কাজ দিয়ে শুরু করো\n• সতর্কতা: "আগে টাকা দাও, পরে আয়" — এমন অফার ১০০% প্রতারণা'},
@@ -325,56 +540,52 @@ var POPULAR = [
   {q:'মোবাইল দিয়ে ফ্রিল্যান্সিং শেখা যায়?',
    a:'সরাসরি উত্তর: হ্যাঁ, শুরুটা মোবাইল দিয়েই সম্ভব — তবে কিছু কাজে পরে ল্যাপটপ লাগবে।\n\n• মোবাইলে শেখা যায়: কনটেন্ট রাইটিং, সোশ্যাল মিডিয়া ম্যানেজমেন্ট, ভিডিও এডিটিং (CapCut), গ্রাফিক ডিজাইন (Canva)\n• প্রতিদিন ১-২ ঘণ্টা YouTube টিউটোরিয়াল + প্র্যাকটিস\n• ফ্রি টুল: Canva, CapCut, Google Docs — সব মোবাইলে চলে\n• কাজ পেলে প্রথম আয় দিয়ে একটা সেকেন্ড-হ্যান্ড ল্যাপটপ নাও — তাহলে সব ধরনের কাজ করতে পারবে'}
 ];
-function renderSamples(){
-  var c = document.getElementById('sampleChips');
-  c.innerHTML = '';
-  SAMPLES.forEach(function(s){
-    var b = document.createElement('button');
-    b.className = 'chip'; b.textContent = '💬 ' + s.q;
-    b.onclick = function(){ document.getElementById('qInput').value = s.q; document.getElementById('qInput').focus(); };
-    c.appendChild(b);
-  });
+function openModal(){
   var p = document.getElementById('popularList');
   p.innerHTML = '';
   POPULAR.forEach(function(item, i){
     var d = document.createElement('div');
     d.className = 'qa-item';
     d.innerHTML = '<div class="qq">❓ ' + esc(item.q) + '</div><div class="aa">' + fmtText(item.a)
-      + '<div class="row"><button class="btn btn-ghost" onclick="copyPopular('+i+')">📘 Facebook-এ শেয়ার করো</button></div></div>';
+      + '<div style="margin-top:10px;"><button class="mbtn" id="pfb'+i+'">📘 Facebook-এ শেয়ার করো</button></div></div>';
     d.querySelector('.qq').onclick = function(){ d.classList.toggle('open'); };
     p.appendChild(d);
   });
-}
-function copyPopular(i){ doCopy(fbFormat(POPULAR[i].q, POPULAR[i].a), '📘 Facebook পোস্ট ফরম্যাট কপি হয়েছে!'); }
-function getHistory(){
-  try{ return JSON.parse(localStorage.getItem('sahajjokori_history') || '[]'); }catch(e){ return []; }
-}
-function saveHistory(q, a){
-  try{
-    var h = getHistory();
-    h.unshift({q:q, a:a, t:Date.now()});
-    h = h.slice(0, 20);
-    localStorage.setItem('sahajjokori_history', JSON.stringify(h));
-    renderHistory();
-  }catch(e){}
-}
-function renderHistory(){
-  var h = getHistory(), el = document.getElementById('historyList');
-  if(!h.length){ el.innerHTML = '<p class="loading">এখনো কোনো প্রশ্ন করোনি।</p>'; return; }
-  el.innerHTML = '';
-  h.forEach(function(item){
-    var d = document.createElement('div');
-    d.className = 'qa-item';
-    d.innerHTML = '<div class="qq">❓ ' + esc(item.q) + '</div><div class="aa">' + fmtText(item.a) + '</div>';
-    d.querySelector('.qq').onclick = function(){ d.classList.toggle('open'); };
-    el.appendChild(d);
+  POPULAR.forEach(function(item, i){
+    document.getElementById('pfb'+i).onclick = function(){
+      doCopy(fbFormat(item.q, item.a), '📘 Facebook পোস্ট ফরম্যাট কপি হয়েছে!');
+    };
   });
+  document.getElementById('popModal').classList.add('open');
+  toggleSidebar(false);
 }
+function closeModal(){ document.getElementById('popModal').classList.remove('open'); }
+
+/* ---------- composer ---------- */
+function autoGrow(){
+  var t = document.getElementById('qInput');
+  t.style.height = 'auto';
+  t.style.height = Math.min(t.scrollHeight, 130) + 'px';
+}
+document.getElementById('qInput').addEventListener('input', autoGrow);
 document.getElementById('qInput').addEventListener('keydown', function(e){
-  if(e.key === 'Enter' && (e.ctrlKey || e.metaKey)) askMentor();
+  if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendMessage(); }
 });
-renderSamples();
-renderHistory();
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape'){ closeModal(); toggleSidebar(false); }
+});
+
+/* ---------- init ---------- */
+loadChats();
+if(!activeId || !chats[activeId]){
+  var ids = Object.keys(chats);
+  if(ids.length){ activeId = ids.sort(function(a,b){ return chats[b].updatedAt - chats[a].updatedAt; })[0]; }
+  else newChatSilent();
+  saveChats();
+}
+renderConvList();
+renderMessages();
+autoGrow();
 </script>
 </body>
 </html>
