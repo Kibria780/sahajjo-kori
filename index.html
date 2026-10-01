@@ -3,16 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>সাহায্য করি — সবার জন্য উন্মুক্ত AI মেন্টর</title>
+<title>সাহায্য করি | AI মেন্টর</title>
 <meta name="description" content="সাহায্য করি — যেকোনো নৈতিক প্রশ্নের উত্তর দেবে AI মেন্টর, Hasan-এর পক্ষ থেকে। সম্পূর্ণ ফ্রি, সবার জন্য উন্মুক্ত।">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤝</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#f4f7f4; --card:#ffffff; --ink:#1d2b22; --muted:#64766a;
-    --green:#0d7a4f; --green-d:#0a5c3e; --green-dd:#083d2b;
-    --amber:#f5a623; --line:#e2ebe4; --soft:#edf5ee;
-    --user-b:#0d7a4f; --shadow:0 2px 12px rgba(15,45,28,.08);
+    --bg:#fafafa; --card:#ffffff; --ink:#1a1a1a; --muted:#6b7280;
+    --green:#0f6a43; --green-d:#0c5535; --green-soft:#e9f4ee;
+    --line:#e8e8e8; --soft:#f3f4f6;
+    --shadow:0 4px 20px rgba(0,0,0,.06);
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
   html,body{height:100%;}
@@ -20,126 +21,137 @@
   .app{display:flex; height:100dvh; overflow:hidden;}
 
   /* ---------- Sidebar ---------- */
-  .sidebar{width:290px; flex:none; background:linear-gradient(180deg,var(--green-d),var(--green-dd)); color:#fff;
-    display:flex; flex-direction:column; z-index:40;}
-  .brand{padding:18px 16px 12px; border-bottom:1px solid rgba(255,255,255,.12);}
-  .brand h1{margin:0; font-size:1.35rem; display:flex; align-items:center; gap:8px;}
-  .brand p{margin:4px 0 0; font-size:.8rem; opacity:.75;}
-  .newchat{margin:14px 16px 6px; background:var(--amber); color:#3a2a00; border:none; border-radius:12px;
-    padding:11px; font-family:inherit; font-weight:700; font-size:.95rem; cursor:pointer;}
-  .newchat:hover{filter:brightness(1.05);}
-  .side-sec{padding:8px 16px 4px; font-size:.75rem; letter-spacing:.06em; opacity:.6; text-transform:uppercase;}
+  .sidebar{width:290px; flex:none; background:#fff; color:var(--ink);
+    display:flex; flex-direction:column; z-index:40; border-right:1px solid var(--line);}
+  .brand{padding:18px 16px 14px; border-bottom:1px solid var(--line);}
+  .brand h1{margin:0; font-size:1.25rem; display:flex; align-items:center; gap:8px; color:#1a1a1a; font-weight:700;}
+  .brand p{margin:5px 0 0; font-size:.78rem; color:var(--muted);}
+  .newchat{margin:14px 16px 6px; background:#fff; color:#1a1a1a; border:1px solid #d8d8d8; border-radius:12px;
+    padding:11px; font-family:inherit; font-weight:600; font-size:.92rem; cursor:pointer; transition:background .15s,border-color .15s;}
+  .newchat:hover{background:#f3f4f6; border-color:#bdbdbd;}
+  .side-sec{padding:10px 18px 4px; font-size:.72rem; letter-spacing:.08em; color:var(--muted); text-transform:uppercase;}
   .convs{flex:1; overflow-y:auto; padding:0 10px 10px;}
   .conv{display:flex; align-items:center; gap:8px; padding:10px 12px; border-radius:10px; cursor:pointer;
-    font-size:.9rem; margin-bottom:4px; border:1px solid transparent;}
-  .conv:hover{background:rgba(255,255,255,.08);}
-  .conv.active{background:rgba(255,255,255,.14); border-color:rgba(255,255,255,.2);}
+    font-size:.9rem; margin-bottom:2px; border:1px solid transparent; color:#374151; transition:background .12s;}
+  .conv:hover{background:#f3f4f6;}
+  .conv.active{background:var(--green-soft); border-color:#d7e7dc;}
   .conv .t{flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-  .conv .x{background:none; border:none; color:rgba(255,255,255,.55); cursor:pointer; font-size:1rem; padding:0 2px;}
-  .conv .x:hover{color:#ffb3a7;}
-  .empty-hist{padding:10px 16px; font-size:.85rem; opacity:.6;}
-  .side-foot{border-top:1px solid rgba(255,255,255,.12); padding:10px 12px; display:flex; flex-direction:column; gap:6px;}
-  .side-btn{background:rgba(255,255,255,.08); color:#fff; border:1px solid rgba(255,255,255,.14); border-radius:10px;
-    padding:9px 12px; font-family:inherit; font-size:.88rem; cursor:pointer; text-align:left;}
-  .side-btn:hover{background:rgba(255,255,255,.14);}
-  details.keyset{font-size:.82rem; opacity:.95;}
-  details.keyset summary{cursor:pointer; padding:9px 12px; background:rgba(255,255,255,.08);
-    border:1px solid rgba(255,255,255,.14); border-radius:10px; font-size:.88rem;}
-  details.keyset .kin{padding:10px 4px 2px;}
-  details.keyset input{width:100%; border:none; border-radius:8px; padding:8px 10px; font-family:inherit; font-size:.85rem; margin-bottom:8px;}
-  details.keyset button{background:var(--amber); border:none; border-radius:8px; padding:7px 14px;
-    font-family:inherit; font-weight:700; cursor:pointer; font-size:.85rem; color:#3a2a00;}
+  .conv .x{background:none; border:none; color:#9ca3af; cursor:pointer; font-size:1rem; padding:0 2px; opacity:0; transition:opacity .12s;}
+  .conv:hover .x{opacity:1;}
+  .conv .x:hover{color:#ef4444;}
+  .empty-hist{padding:10px 16px; font-size:.85rem; color:var(--muted);}
+  .side-foot{border-top:1px solid var(--line); padding:10px 12px; display:flex; flex-direction:column; gap:8px;}
+  .side-btn{background:#fff; color:#374151; border:1px solid var(--line); border-radius:10px;
+    padding:9px 12px; font-family:inherit; font-size:.88rem; cursor:pointer; text-align:left; transition:background .12s;}
+  .side-btn:hover{background:#f3f4f6;}
+  details.keyset{font-size:.82rem;}
+  details.keyset summary{cursor:pointer; padding:9px 12px; background:#f9fafb; color:#374151;
+    border:1px solid var(--line); border-radius:10px; font-size:.88rem;}
+  details.keyset .kin{padding:10px 4px 2px; color:var(--muted);}
+  details.keyset input{width:100%; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-family:inherit; font-size:.85rem; margin-bottom:8px;}
+  details.keyset button{background:var(--green); border:none; border-radius:8px; padding:7px 14px;
+    font-family:inherit; font-weight:700; cursor:pointer; font-size:.85rem; color:#fff;}
 
   /* ---------- Main ---------- */
   .main{flex:1; display:flex; flex-direction:column; min-width:0;}
-  .topbar{display:flex; align-items:center; gap:10px; padding:12px 16px; background:var(--card);
-    border-bottom:1px solid var(--line); box-shadow:var(--shadow); z-index:20;}
-  .burger{display:none; background:none; border:none; font-size:1.4rem; cursor:pointer; color:var(--green-d);}
-  .topbar .tt{font-weight:700; color:var(--green-d); font-size:1.05rem;}
-  .topbar .sub{font-size:.78rem; color:var(--muted);}
+  .topbar{display:flex; align-items:center; gap:10px; padding:11px 18px; background:#fff;
+    border-bottom:1px solid var(--line); z-index:20;}
+  .burger{display:none; background:none; border:none; font-size:1.35rem; cursor:pointer; color:#374151;}
+  .topbar .ttrow{display:flex; align-items:center; gap:8px;}
+  .topbar #chatTitle{font-weight:600; color:#1a1a1a; font-size:1.02rem;}
+  .aibadge{font-size:.68rem; font-weight:600; color:var(--green); background:var(--green-soft);
+    border:1px solid #d7e7dc; padding:2px 9px; border-radius:999px; letter-spacing:.02em;}
+  .topbar .sub{font-size:.76rem; color:var(--muted); margin-top:1px;}
   .scrim{display:none;}
 
   .msgs{flex:1; overflow-y:auto; padding:22px 16px 12px;}
-  .msgs-inner{max-width:760px; margin:0 auto; display:flex; flex-direction:column; gap:14px;}
+  .msgs-inner{max-width:760px; margin:0 auto; display:flex; flex-direction:column; gap:22px;}
 
-  .hero-empty{text-align:center; padding:34px 10px 10px;}
-  .hero-empty .big{font-size:3rem;}
-  .hero-empty h2{margin:8px 0 4px; color:var(--green-d); font-size:1.4rem;}
-  .hero-empty p{color:var(--muted); margin:0 0 14px;}
-  .chips{display:flex; flex-wrap:wrap; gap:8px; justify-content:center;}
-  .chip{background:var(--card); border:1px solid var(--line); color:var(--green-d); border-radius:999px;
-    padding:8px 15px; font-size:.88rem; cursor:pointer; font-family:inherit; box-shadow:var(--shadow);}
-  .chip:hover{border-color:var(--green); background:var(--soft);}
+  .hero-empty{text-align:center; padding:44px 12px 8px; max-width:640px; margin:0 auto;}
+  .logomark{width:76px; height:76px; border-radius:50%; background:var(--green-soft);
+    display:flex; align-items:center; justify-content:center; font-size:2.4rem; margin:0 auto 16px;
+    border:1px solid #d7e7dc;}
+  .hero-empty h2{margin:0 0 6px; color:#1a1a1a; font-size:1.5rem; font-weight:600;}
+  .hero-empty p{color:var(--muted); margin:0; font-size:1rem;}
+  .suggest-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:22px auto 0; max-width:600px;}
+  .scard{background:#fff; border:1px solid var(--line); border-radius:14px; padding:14px 16px; text-align:left;
+    font-family:inherit; font-size:.9rem; color:#374151; cursor:pointer; line-height:1.55;
+    transition:transform .12s, box-shadow .12s, border-color .12s;}
+  .scard:hover{transform:translateY(-2px); box-shadow:0 8px 20px rgba(0,0,0,.07); border-color:#cfd6dc;}
+  .scard b{display:block; font-size:.76rem; color:var(--muted); font-weight:600; margin-bottom:4px; letter-spacing:.03em;}
 
-  .mrow{display:flex; gap:10px; align-items:flex-start; animation:fadeUp .25s ease;}
+  .mrow{display:flex; gap:12px; align-items:flex-start; animation:fadeUp .25s ease;}
   @keyframes fadeUp{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;}}
   .mrow.user{justify-content:flex-end;}
-  .avatar{flex:none; width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center;
-    font-size:1.1rem; background:var(--soft); border:1px solid var(--line);}
-  .mrow.user .avatar{background:var(--green); color:#fff; border:none;}
-  .bubble{max-width:82%; padding:11px 15px; border-radius:16px; font-size:.97rem; word-wrap:break-word;}
-  .mrow.user .bubble{background:var(--user-b); color:#fff; border-bottom-right-radius:6px;}
-  .mrow.ai .bubble{background:var(--card); border:1px solid var(--line); border-bottom-left-radius:6px; box-shadow:var(--shadow);}
-  .bubble p{margin:6px 0;}
+  .avatar{flex:none; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-size:1.05rem; background:var(--green-soft); border:1px solid #d7e7dc;}
+  .mrow.user .avatar{display:none;}
+  .bubble{max-width:82%; padding:10px 16px; border-radius:18px; font-size:.97rem; word-wrap:break-word; line-height:1.7;}
+  .mrow.user .bubble{background:#f0f0f0; color:#1a1a1a;}
+  .mrow.ai .bubble{background:transparent; border:none; box-shadow:none; padding:2px 0; max-width:100%;}
+  .bubble p{margin:7px 0;}
   .bubble ul{margin:8px 0; padding-left:20px;}
-  .bubble li{margin:3px 0;}
-  .mactions{display:flex; gap:6px; margin-top:10px; flex-wrap:wrap;}
-  .mbtn{background:var(--soft); border:1px solid var(--line); color:var(--green-d); border-radius:999px;
-    padding:5px 12px; font-size:.8rem; cursor:pointer; font-family:inherit; font-weight:600;}
-  .mbtn:hover{background:#e0efe3;}
-  .prov{font-size:.72rem; color:var(--muted); margin-top:8px;}
-  .typing{display:inline-flex; gap:5px; padding:14px 16px;}
-  .typing span{width:8px; height:8px; border-radius:50%; background:#9db5a4; animation:tp 1.2s infinite;}
+  .bubble li{margin:4px 0;}
+  .mactions{display:flex; gap:6px; margin-top:12px; flex-wrap:wrap;}
+  .mbtn{background:transparent; border:1px solid var(--line); color:var(--muted); border-radius:999px;
+    padding:5px 13px; font-size:.78rem; cursor:pointer; font-family:inherit; font-weight:600; transition:all .12s;}
+  .mbtn:hover{color:var(--green); border-color:var(--green); background:#f6faf7;}
+  .prov{font-size:.72rem; color:#9ca3af; margin-top:8px;}
+  .typing{display:inline-flex; gap:5px; padding:14px 4px;}
+  .typing span{width:8px; height:8px; border-radius:50%; background:#b6c2bb; animation:tp 1.2s infinite;}
   .typing span:nth-child(2){animation-delay:.15s;} .typing span:nth-child(3){animation-delay:.3s;}
   @keyframes tp{0%,60%,100%{transform:none; opacity:.5;} 30%{transform:translateY(-5px); opacity:1;}}
 
-  .composer{padding:12px 16px calc(14px + env(safe-area-inset-bottom)); background:var(--card); border-top:1px solid var(--line);}
+  .composer{padding:10px 16px calc(16px + env(safe-area-inset-bottom)); background:transparent;}
   .composer-inner{max-width:760px; margin:0 auto;}
-  .cbox{display:flex; gap:8px; align-items:flex-end; background:var(--bg); border:2px solid var(--line);
-    border-radius:16px; padding:8px 8px 8px 14px; transition:border-color .15s;}
-  .cbox:focus-within{border-color:var(--green);}
+  .cbox{display:flex; gap:6px; align-items:flex-end; background:#fff; border:1px solid #e0e0e0;
+    border-radius:24px; padding:9px 9px 9px 18px; box-shadow:0 4px 22px rgba(0,0,0,.07); transition:border-color .15s, box-shadow .15s;}
+  .cbox:focus-within{border-color:#c4c4c4; box-shadow:0 4px 26px rgba(0,0,0,.1);}
   textarea#qInput{flex:1; border:none; background:transparent; resize:none; font-family:inherit; font-size:1rem;
-    max-height:130px; padding:8px 0; line-height:1.55;}
+    max-height:130px; padding:8px 0; line-height:1.55; color:#1a1a1a;}
   textarea#qInput:focus{outline:none;}
-  .sendbtn{flex:none; width:44px; height:44px; border-radius:12px; border:none; background:var(--green); color:#fff;
-    font-size:1.25rem; cursor:pointer;}
+  textarea#qInput::placeholder{color:#9ca3af;}
+  .sendbtn{flex:none; width:40px; height:40px; border-radius:50%; border:none; background:var(--green); color:#fff;
+    font-size:1.15rem; cursor:pointer; transition:background .15s;}
   .sendbtn:hover{background:var(--green-d);}
   .sendbtn:disabled{opacity:.55; cursor:wait;}
-  .crow{display:flex; gap:8px; margin-top:8px; align-items:center;}
-  select#catInput{border:1px solid var(--line); border-radius:10px; padding:7px 10px; font-family:inherit;
-    font-size:.85rem; background:#fff; color:var(--muted);}
-  .hint{font-size:.76rem; color:var(--muted);}
+  .crow{display:flex; gap:8px; margin-top:9px; align-items:center; justify-content:center;}
+  select#catInput{border:1px solid var(--line); border-radius:999px; padding:6px 12px; font-family:inherit;
+    font-size:.8rem; background:#fff; color:var(--muted);}
+  .hint{font-size:.74rem; color:#9ca3af;}
 
   /* ---------- v3 additions ---------- */
   .mrow.revealing .mactions{display:none;}
   .mrow.revealing .prov{display:none;}
   .top-right{margin-left:auto; display:flex; align-items:center; gap:8px;}
-  .topbtn{background:var(--soft); border:1px solid var(--line); border-radius:10px; padding:7px 11px;
-    cursor:pointer; font-size:1.05rem; font-family:inherit; line-height:1;}
-  .topbtn:hover{background:#e0efe3;}
-  .aidot{width:11px; height:11px; border-radius:50%; background:#b9c9bd; display:inline-block; flex:none;}
-  .aidot.ok{background:#22c55e; box-shadow:0 0 6px rgba(34,197,94,.7);}
-  .aidot.bad{background:#ef4444; box-shadow:0 0 6px rgba(239,68,68,.7);}
-  .micbtn{flex:none; width:44px; height:44px; border-radius:12px; border:1px solid var(--line); background:var(--soft);
-    color:var(--green-d); font-size:1.2rem; cursor:pointer; font-family:inherit;}
-  .micbtn:hover{background:#e0efe3;}
-  .micbtn.listening{background:#ef4444; border-color:#ef4444; color:#fff; animation:pulse 1s infinite;}
+  .topbtn{background:#fff; border:1px solid var(--line); border-radius:10px; padding:7px 11px;
+    cursor:pointer; font-size:1rem; font-family:inherit; line-height:1; transition:background .12s;}
+  .topbtn:hover{background:#f3f4f6;}
+  .aidot{width:10px; height:10px; border-radius:50%; background:#d1d5db; display:inline-block; flex:none;}
+  .aidot.ok{background:#22c55e; box-shadow:0 0 6px rgba(34,197,94,.6);}
+  .aidot.bad{background:#ef4444; box-shadow:0 0 6px rgba(239,68,68,.6);}
+  .micbtn{flex:none; width:40px; height:40px; border-radius:50%; border:none; background:transparent;
+    color:#9ca3af; font-size:1.15rem; cursor:pointer; font-family:inherit; transition:background .12s,color .12s;}
+  .micbtn:hover{background:#f3f4f6; color:#374151;}
+  .micbtn.listening{background:#ef4444; color:#fff; animation:pulse 1s infinite;}
   @keyframes pulse{50%{opacity:.55;}}
   .sendbtn.stop{background:#ef4444;}
   .sendbtn.stop:hover{background:#dc2626;}
 
   /* ---------- Modal ---------- */
-  .modal{display:none; position:fixed; inset:0; background:rgba(15,30,20,.55); z-index:100;
+  .modal{display:none; position:fixed; inset:0; background:rgba(0,0,0,.35); z-index:100;
     align-items:center; justify-content:center; padding:18px;}
   .modal.open{display:flex;}
-  .modal-card{background:#fff; border-radius:18px; max-width:620px; width:100%; max-height:82dvh; overflow-y:auto; padding:20px;}
-  .modal-card h2{margin:0 0 6px; color:var(--green-d); font-size:1.2rem;}
-  .mclose{float:right; background:var(--soft); border:none; border-radius:50%; width:34px; height:34px;
-    font-size:1.1rem; cursor:pointer; color:var(--green-d);}
-  .qa-item{border-bottom:1px solid var(--line); padding:12px 0;}
+  .modal-card{background:#fff; border-radius:16px; max-width:620px; width:100%; max-height:82dvh; overflow-y:auto; padding:22px;
+    box-shadow:0 20px 60px rgba(0,0,0,.15);}
+  .modal-card h2{margin:0 0 6px; color:#1a1a1a; font-size:1.2rem; font-weight:600;}
+  .mclose{float:right; background:#f3f4f6; border:none; border-radius:50%; width:34px; height:34px;
+    font-size:1.1rem; cursor:pointer; color:#374151;}
+  .mclose:hover{background:#e5e7eb;}
+  .qa-item{border-bottom:1px solid var(--line); padding:13px 0;}
   .qa-item:last-child{border-bottom:none;}
-  .qa-item .qq{font-weight:700; color:var(--green-d); cursor:pointer; font-size:.95rem;}
-  .qa-item .aa{display:none; margin-top:8px; font-size:.92rem; color:#33473b;}
+  .qa-item .qq{font-weight:600; color:#0f6a43; cursor:pointer; font-size:.95rem;}
+  .qa-item .aa{display:none; margin-top:8px; font-size:.92rem; color:#374151; line-height:1.7;}
   .qa-item.open .aa{display:block;}
 
   .toast{position:fixed; left:50%; bottom:90px; transform:translateX(-50%) translateY(20px); background:#1d2b22; color:#fff;
@@ -153,7 +165,10 @@
     .scrim{display:block; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:30;
       opacity:0; pointer-events:none; transition:opacity .25s;}
     .scrim.on{opacity:1; pointer-events:auto;}
-    .bubble{max-width:88%;}
+    .mrow.user .bubble{max-width:88%;}
+    .conv .x{opacity:1;}
+    .suggest-grid{grid-template-columns:1fr;}
+    .hero-empty{padding-top:30px;}
   }
 </style>
 </head>
@@ -175,7 +190,7 @@
         <div class="kin">
           <input type="password" id="groqKeyInput" placeholder="gsk_...">
           <button onclick="saveGroqKey()">সেভ</button>
-          <div style="margin-top:6px; opacity:.75;">কী শুধু তোমার ব্রাউজারে থাকে। <a href="https://console.groq.com" target="_blank" rel="noopener" style="color:#ffd97a;">ফ্রি কী নাও</a></div>
+          <div style="margin-top:6px;">কী শুধু আপনার ব্রাউজারে থাকে। <a href="https://console.groq.com" target="_blank" rel="noopener" style="color:#0f6a43;">ফ্রি কী নিন</a></div>
         </div>
       </details>
     </div>
@@ -187,8 +202,8 @@
     <div class="topbar">
       <button class="burger" onclick="toggleSidebar()">☰</button>
       <div>
-        <div class="tt" id="chatTitle">সাহায্য করি</div>
-        <div class="sub">AI মেন্টর • বাংলায় উত্তর দেয় 💚</div>
+        <div class="ttrow"><span id="chatTitle">সাহায্য করি</span><span class="aibadge">AI মেন্টর</span></div>
+        <div class="sub">দিনরাত — যখনই দরকার 💚</div>
       </div>
       <div class="top-right">
         <span id="aiDot" class="aidot" title="AI স্ট্যাটাস"></span>
@@ -201,9 +216,9 @@
     <div class="composer">
       <div class="composer-inner">
         <div class="cbox">
-          <textarea id="qInput" rows="1" placeholder="তোমার প্রশ্ন লেখো... (Enter = পাঠাও)"></textarea>
-          <button class="micbtn" id="micBtn" onclick="toggleVoice()" title="ভয়েসে বলো 🎤">🎤</button>
-          <button class="sendbtn" id="sendBtn" onclick="sendMessage()" title="পাঠাও">➤</button>
+          <textarea id="qInput" rows="1" placeholder="আপনার প্রশ্ন লিখুন... (Enter = পাঠান)"></textarea>
+          <button class="micbtn" id="micBtn" onclick="toggleVoice()" title="ভয়েসে বলুন 🎤">🎤</button>
+          <button class="sendbtn" id="sendBtn" onclick="sendMessage()" title="পাঠান">➤</button>
         </div>
         <div class="crow">
           <select id="catInput">
@@ -215,7 +230,7 @@
             <option>🌍 সাধারণ জ্ঞান</option>
             <option>✨ অন্যান্য</option>
           </select>
-          <span class="hint">🛡️ অনৈতিক প্রশ্নের উত্তর দেওয়া হয় না</span>
+          <span class="hint">🛡️ অনৈতিক প্রশ্নের উত্তর দেওয়া হয় না • দিনরাত সেবা</span>
         </div>
       </div>
     </div>
@@ -227,7 +242,7 @@
   <div class="modal-card">
     <button class="mclose" onclick="closeModal()">✕</button>
     <h2>🔥 জনপ্রিয় প্রশ্নোত্তর</h2>
-    <p style="color:var(--muted); font-size:.88rem; margin:0 0 8px;">ট্যাপ করে উত্তর দেখো, ভালো লাগলে Facebook-এ শেয়ার করো</p>
+    <p style="color:var(--muted); font-size:.88rem; margin:0 0 8px;">ট্যাপ করে উত্তর দেখুন — ভালো লাগলে Facebook-এ শেয়ার করুন</p>
     <div id="popularList"></div>
   </div>
 </div>
@@ -236,7 +251,7 @@
 <script>
 /* ================= সাহায্য করি v3 — Chat UI ================= */
 var SYSTEM_PROMPT = "You are 'সাহায্য করি', a friendly AI mentor answering on behalf of Hasan, a Bangladeshi entrepreneur who started this free initiative to help everyone. "
-  + "Always answer in Bengali (Bangla script). Be warm, practical and clear. "
+  + "Always answer in Bengali (Bangla script). Be warm, practical and clear. Address the user respectfully using the আপনি form. "
   + "Structure: give the direct answer in 1-2 lines first, then key points as • bullets. Maximum ~250 words. "
   + "If the question asks for anything illegal, harmful, dangerous or unethical (weapons, fraud, hacking, cheating in exams, hate, self-harm, medical diagnosis), politely decline in Bengali and offer to help with something else instead. "
   + "Never claim to be human. If unsure, say so honestly in Bengali.";
@@ -303,7 +318,7 @@ function renderConvList(){
   var el = document.getElementById('convList');
   var arr = Object.keys(chats).map(function(k){ return chats[k]; })
     .sort(function(a,b){ return b.updatedAt - a.updatedAt; });
-  if(!arr.length){ el.innerHTML = '<div class="empty-hist">এখনো কোনো আলাপ নেই।<br>নতুন আলাপ শুরু করো! 👇</div>'; return; }
+  if(!arr.length){ el.innerHTML = '<div class="empty-hist">এখনো কোনো আলাপ নেই।<br>নতুন আলাপ শুরু করুন 👇</div>'; return; }
   el.innerHTML = '';
   arr.forEach(function(c){
     var d = document.createElement('div');
@@ -346,11 +361,10 @@ function ensureChat(){
 
 /* ---------- messages ---------- */
 var SAMPLE_CHIPS = [
-  'অনলাইনে আয় শুরু করতে চাই, প্রথমে কী করবো?',
-  'পরীক্ষার পড়া মনে থাকে না, কী করবো?',
-  'ছোট পুঁজিতে কোন ব্যবসা ভালো হবে?',
-  'মোবাইল দিয়ে ফ্রিল্যান্সিং শেখা যায়?',
-  'ইংরেজিতে কথা বলার ভয় কাটাবো কীভাবে?'
+  {t:'অনলাইনে আয়', q:'অনলাইনে আয় শুরু করতে চাই, প্রথমে কী করবো?'},
+  {t:'পড়াশোনা', q:'পরীক্ষার পড়া মনে থাকে না, কী করবো?'},
+  {t:'ব্যবসা', q:'ছোট পুঁজিতে কোন ব্যবসা ভালো হবে?'},
+  {t:'ফ্রিল্যান্সিং', q:'মোবাইল দিয়ে ফ্রিল্যান্সিং শেখা যায়?'}
 ];
 function renderMessages(){
   ensureChat();
@@ -361,14 +375,14 @@ function renderMessages(){
   if(!c.messages.length){
     var h = document.createElement('div');
     h.className = 'hero-empty';
-    h.innerHTML = '<div class="big">🤝</div><h2>কীভাবে সাহায্য করতে পারি?</h2>'
-      + '<p>যেকোনো নৈতিক প্রশ্ন করো — AI মেন্টর বাংলায় উত্তর দেবে</p><div class="chips" id="chipRow"></div>';
+    h.innerHTML = '<div class="logomark">🤝</div><h2>আপনাকে কীভাবে সাহায্য করতে পারি?</h2>'
+      + '<p>কোনো প্রশ্নই ছোট নয় — দিনরাত আপনার পাশে আছি 💚</p><div class="suggest-grid" id="chipRow"></div>';
     box.appendChild(h);
     var row = h.querySelector('#chipRow');
-    SAMPLE_CHIPS.forEach(function(q){
+    SAMPLE_CHIPS.forEach(function(s){
       var b = document.createElement('button');
-      b.className = 'chip'; b.textContent = '💬 ' + q;
-      b.onclick = function(){ document.getElementById('qInput').value = q; sendMessage(); };
+      b.className = 'scard'; b.innerHTML = '<b>' + esc(s.t) + '</b>' + esc(s.q);
+      b.onclick = function(){ document.getElementById('qInput').value = s.q; sendMessage(); };
       row.appendChild(b);
     });
   } else {
@@ -430,13 +444,13 @@ function getGroqKey(){
 }
 function saveGroqKey(){
   var k = document.getElementById('groqKeyInput').value.trim();
-  if(!k){ toast('আগে কী-টা বসাও'); return; }
+  if(!k){ toast('আগে কী-টা বসান'); return; }
   try{ localStorage.setItem('sahajjokori_groq_key', k); }catch(e){}
   document.getElementById('groqKeyInput').value = '';
   toast('✅ কী সেভ হয়েছে');
 }
 /* ---------- AI chain (v3: abort-aware, nonstop) ---------- */
-var OFFLINE_MSG = '😔 দুঃখিত! এই মুহূর্তে AI সার্ভারে পৌঁছানো যাচ্ছে না।\n\n• একটু পরে আবার চেষ্টা করো\n• অথবা সাইডবারের ⚙️ থেকে ফ্রি Groq কী বসাও — তাহলে আরও নির্ভরযোগ্যভাবে চলবে';
+var OFFLINE_MSG = '😔 দুঃখিত! এই মুহূর্তে AI সার্ভারে পৌঁছানো যাচ্ছে না।\n\n• একটু পরে আবার চেষ্টা করুন\n• অথবা সাইডবারের ⚙️ থেকে ফ্রি Groq কী বসান — তাহলে আরও নির্ভরযোগ্যভাবে চলবে';
 
 function linkSignal(localCtl, extSignal){
   if(!extSignal) return function(){};
@@ -541,8 +555,8 @@ function setAIStatus(ok){
 function setSendBtn(mode){
   var b = document.getElementById('sendBtn');
   if(!b) return;
-  if(mode === 'stop'){ b.innerHTML = '⏹'; b.title = 'থামাও'; b.disabled = false; b.classList.add('stop'); }
-  else { b.innerHTML = '➤'; b.title = 'পাঠাও'; b.disabled = false; b.classList.remove('stop'); }
+  if(mode === 'stop'){ b.innerHTML = '⏹'; b.title = 'থামান'; b.disabled = false; b.classList.add('stop'); }
+  else { b.innerHTML = '➤'; b.title = 'পাঠান'; b.disabled = false; b.classList.remove('stop'); }
 }
 function finishSending(){
   sending = false; currentAbort = null; typingStopped = false;
@@ -583,7 +597,7 @@ async function sendMessage(){
   var inp = document.getElementById('qInput');
   var q = inp.value.trim();
   var cat = document.getElementById('catInput').value;
-  if(!q){ toast('আগে তোমার প্রশ্নটা লেখো ✍️'); return; }
+  if(!q){ toast('আগে আপনার প্রশ্নটা লিখুন ✍️'); return; }
   ensureChat();
   var c = chats[activeId];
   var chatId = activeId;
@@ -631,7 +645,7 @@ async function sendMessage(){
   }
 }
 async function regenerateAnswer(idx){
-  if(sending){ toast('আগে চলমান উত্তর শেষ হতে দাও ⏳'); return; }
+  if(sending){ toast('আগে চলমান উত্তর শেষ হতে দিন ⏳'); return; }
   ensureChat();
   var c = chats[activeId];
   var chatId = activeId;
@@ -678,7 +692,7 @@ function doCopy(text, msg){
   function fallback(){
     var ta = document.createElement('textarea');
     ta.value = text; document.body.appendChild(ta); ta.select();
-    try{ document.execCommand('copy'); done(); }catch(e){ toast('কপি হয়নি'); }
+    try{ document.execCommand('copy'); done(); }catch(e){ toast('কপি করা যায়নি'); }
     document.body.removeChild(ta);
   }
   if(navigator.clipboard && navigator.clipboard.writeText){
@@ -687,7 +701,7 @@ function doCopy(text, msg){
 }
 function fbFormat(q, a){
   return '❓ প্রশ্ন: ' + q + '\n\n💡 উত্তর (সাহায্য করি AI মেন্টর):\n' + a
-    + '\n\n🤝 তোমারও কোনো প্রশ্ন আছে? সাহায্য করি — সবার জন্য উন্মুক্ত!\n#সাহাযযকরি #SahajjoKori';
+    + '\n\n🤝 আপনারও কোনো প্রশ্ন আছে? সাহায্য করি — সবার জন্য উন্মুক্ত, দিনরাত!\n#সাহাযযকরি #SahajjoKori';
 }
 function shareToFB(idx){
   var c = chats[activeId];
@@ -733,7 +747,7 @@ function toggleVoice(){
     recog.start();
     listening = true;
     document.getElementById('micBtn').classList.add('listening');
-    toast('🎤 বলো...');
+    toast('🎤 বলুন...');
   }catch(e){ toast('ভয়েস চালু হয়নি'); }
 }
 
@@ -760,11 +774,11 @@ function exportChat(){
 /* ---------- popular modal ---------- */
 var POPULAR = [
   {q:'অনলাইনে আয় শুরু করতে চাই, প্রথমে কী করবো?',
-   a:'সরাসরি উত্তর: আগে একটা স্কিল শেখো, তারপর আয় — উল্টোটা নয়।\n\n• ধাপ ১: একটা চাহিদাসম্পন্ন স্কিল বেছে নাও (যেমন: ওয়েব ডিজাইন, ভিডিও এডিটিং, গ্রাফিক ডিজাইন, কনটেন্ট রাইটিং)\n• ধাপ ২: ২-৩ মাস প্রতিদিন ২ ঘণ্টা করে শেখো — YouTube-এ ফ্রি টিউটোরিয়াল আছে\n• ধাপ ৩: ৫-৬টা নমুনা কাজ বানিয়ে পোর্টফোলিও তৈরি করো\n• ধাপ ৪: Fiverr/Upwork-এ প্রোফাইল খুলে ছোট কাজ দিয়ে শুরু করো\n• সতর্কতা: "আগে টাকা দাও, পরে আয়" — এমন অফার ১০০% প্রতারণা'},
+   a:'সরাসরি উত্তর: আগে একটা স্কিল শিখুন, তারপর আয় — উল্টোটা নয়।\n\n• ধাপ ১: একটা চাহিদাসম্পন্ন স্কিল বেছে নিন (যেমন: ওয়েব ডিজাইন, ভিডিও এডিটিং, গ্রাফিক ডিজাইন, কনটেন্ট রাইটিং)\n• ধাপ ২: ২-৩ মাস প্রতিদিন ২ ঘণ্টা করে শিখুন — YouTube-এ ফ্রি টিউটোরিয়াল আছে\n• ধাপ ৩: ৫-৬টা নমুনা কাজ বানিয়ে পোর্টফোলিও তৈরি করুন\n• ধাপ ৪: Fiverr/Upwork-এ প্রোফাইল খুলে ছোট কাজ দিয়ে শুরু করুন\n• সতর্কতা: "আগে টাকা দাও, পরে আয়" — এমন অফার ১০০% প্রতারণা'},
   {q:'পরীক্ষার পড়া মনে থাকে না, কী করবো?',
-   a:'সরাসরি উত্তর: বারবার পড়ার চেয়ে "স্মরণ করে লেখা" ৩ গুণ কার্যকর।\n\n• পড়ার পর বই বন্ধ করে খাতায় মূল পয়েন্টগুলো লেখো — এটাই Active Recall\n• ১ দিন, ৭ দিন, ৩০ দিন পর রিভিশন দাও (Spaced Repetition)\n• কঠিন টপিক নিজের ভাষায় কাউকে বুঝিয়ে বলো (বা আয়নায় বলো)\n• পড়ার সময় ফোন দূরে রাখো — ২৫ মিনিট পড়া + ৫ মিনিট বিরতি\n• ঘুম ঠিক রাখো — ঘুমের মধ্যে মস্তিষ্ক পড়া "সেভ" করে'},
+   a:'সরাসরি উত্তর: বারবার পড়ার চেয়ে "স্মরণ করে লেখা" ৩ গুণ কার্যকর।\n\n• পড়ার পর বই বন্ধ করে খাতায় মূল পয়েন্টগুলো লিখুন — এটাই Active Recall\n• ১ দিন, ৭ দিন, ৩০ দিন পর রিভিশন দিন (Spaced Repetition)\n• কঠিন টপিক নিজের ভাষায় কাউকে বুঝিয়ে বলুন (বা আয়নায় বলুন)\n• পড়ার সময় ফোন দূরে রাখুন — ২৫ মিনিট পড়া + ৫ মিনিট বিরতি\n• ঘুম ঠিক রাখুন — ঘুমের মধ্যে মস্তিষ্ক পড়া "সেভ" করে'},
   {q:'মোবাইল দিয়ে ফ্রিল্যান্সিং শেখা যায়?',
-   a:'সরাসরি উত্তর: হ্যাঁ, শুরুটা মোবাইল দিয়েই সম্ভব — তবে কিছু কাজে পরে ল্যাপটপ লাগবে।\n\n• মোবাইলে শেখা যায়: কনটেন্ট রাইটিং, সোশ্যাল মিডিয়া ম্যানেজমেন্ট, ভিডিও এডিটিং (CapCut), গ্রাফিক ডিজাইন (Canva)\n• প্রতিদিন ১-২ ঘণ্টা YouTube টিউটোরিয়াল + প্র্যাকটিস\n• ফ্রি টুল: Canva, CapCut, Google Docs — সব মোবাইলে চলে\n• কাজ পেলে প্রথম আয় দিয়ে একটা সেকেন্ড-হ্যান্ড ল্যাপটপ নাও — তাহলে সব ধরনের কাজ করতে পারবে'}
+   a:'সরাসরি উত্তর: হ্যাঁ, শুরুটা মোবাইল দিয়েই সম্ভব — তবে কিছু কাজে পরে ল্যাপটপ লাগবে।\n\n• মোবাইলে শেখা যায়: কনটেন্ট রাইটিং, সোশ্যাল মিডিয়া ম্যানেজমেন্ট, ভিডিও এডিটিং (CapCut), গ্রাফিক ডিজাইন (Canva)\n• প্রতিদিন ১-২ ঘণ্টা YouTube টিউটোরিয়াল + প্র্যাকটিস\n• ফ্রি টুল: Canva, CapCut, Google Docs — সব মোবাইলে চলে\n• কাজ পেলে প্রথম আয় দিয়ে একটা সেকেন্ড-হ্যান্ড ল্যাপটপ নিন — তাহলে সব ধরনের কাজ করতে পারবেন'}
 ];
 function openModal(){
   var p = document.getElementById('popularList');
@@ -773,7 +787,7 @@ function openModal(){
     var d = document.createElement('div');
     d.className = 'qa-item';
     d.innerHTML = '<div class="qq">❓ ' + esc(item.q) + '</div><div class="aa">' + fmtText(item.a)
-      + '<div style="margin-top:10px;"><button class="mbtn" id="pfb'+i+'">📘 Facebook-এ শেয়ার করো</button></div></div>';
+      + '<div style="margin-top:10px;"><button class="mbtn" id="pfb'+i+'">📘 Facebook-এ শেয়ার করুন</button></div></div>';
     d.querySelector('.qq').onclick = function(){ d.classList.toggle('open'); };
     p.appendChild(d);
   });
